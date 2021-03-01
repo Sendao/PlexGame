@@ -1,0 +1,6 @@
+* load objects into a registry
+- load breakables
+- store the names of breakable shapes in the shape or userid
+- load triangle mesh colliders
+- import colliders via map
+- auto copy object to collider

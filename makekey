@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo Usage: makekey [key] [certfile]
+echo Reads [key].pem, writes [key].pfx
+echo Reading $1.pem
+openssl pkcs12 -inkey $1.pem -in $2 -export -out $1.pfx
+

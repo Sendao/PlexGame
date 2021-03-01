@@ -1,0 +1,1717 @@
+
+Leftovers:
+ - libsendao::Prepare
+  - handler is null, single/threaded do nothing
+ - Serialization
+  - allow SClone(table, subtype)
+  - change the new_obj/free_obj pattern to a single shorter function ( 'typeread'/'typewrite' )
+ - 2dUI
+  - record which widget drew which renderable and reset just the widget list (in place)
+ - Tabbed Panes
+  x add item: tab + pane
+  - write TabbedPane_Select
+  - tabs instead of buttons
+ - Framebuffers
+  - fix the goddamn zoom shit
+ - Scroll Areas
+  - attach scrollbars if dimx > w
+ - Scrollbars
+  - mousedown/up move update loop
+ - Relmap
+  - add items
+  - add/break connections
+  - factory for per-items
+ - Histbar
+  - addChild override:
+   - if children_width > width,
+    - remove leftmost entries from visibility
+  - removeChild override:
+   - re-add rightmost hidden entries until width is good
+ - Listview
+  - factory for per-items
+ - Directory
+  - connect open/close events
+  - api open/close events
+
+Todo:
+ - 2dui: scrolling, zoomable interfaces
+ - finalize pattern keying
+ - save concept connections
+ - implement keying
+ - database: inheritance objmap
+
+Cellular Generation
+ - equation surfaces
+ - scalable cells
+ - border cells ("channels")
+
+Leftovers:
+ - delete your own whiteboard posts/ admin delete any&all
+
+Database:
+ - allow specification of index size limits
+ - save type details and load them before initializing types (db.hdr)
+ - if type details change from saved, convert database
+
+Cardauger:
+ - Planetary ephemeris? https://www.npmjs.com/package/ephemeris-moshier
+ - Sunset/sunrise/lunar at least: https://www.npmjs.com/package/suncalc
+ - spring graph
+ - script commands
+   - load topic search results
+   - load rss feed
+   - add notices to home
+   - remove from home
+ - Transitions - movements from one schedule to another
+  - "force" transition (time reliant)
+    -- wrap events
+    -- wrap old ideas
+    -- engage new ideas
+  - "negotiate" transition (time pending)
+   -- wrap events
+   -- wrap new ideas
+   -- engage old ideas (I know! It seems strange. but it should work.)
+
+Cardizer:
+ - resource editor
+  - type selector
+  - url resolving
+    - html, xml, json, rss: cache preview, do not resolve(url saved for updates)
+    - image, text, mp3, video: cache and resolve(url becomes reference only)
+ - finish the resource previews
+ - load feed worker: move mass downloads to background and multithread
+
+Frontend stuffing:
+ - "Todo list"
+   - shufflable
+   - group items by activity zone (time+place)
+   - tag items
+   - repeating items (timers)
+   - code in broadband: create a control
+   - support paging
+ -
+
+Radiant:
+ - document xDragget/xDragset/xDraginit/xDrag
+ - whiteboard times should update periodically
+
+Outliner:
+ - test how ctags appends symbols
+  - might have to have a tags-file-folder (like ".tags")
+ - ctags each file when it changes
+
+Outliner:
+ - sometimes doesn't find tags file (missing path array?)
+ - support nest tags eg 'a->a.b' is just 'a->b'
+
+Top Nodes:
+- "SADS" - Schizophrenic Ammunition Delivery Service
+ - Card scripts
+ - handle google some more
+ - reorganize files
+
+Concepts:
+ - walk thru the systems
+ - complete the matchers
+ - finish patternizer
+ - game interface (input command, viewer)
+
+Client:
+ - "Can't locate subid" report during rebranching
+
+ Schedule?
+  - warmups / wayzon / szn|db
+  - concepts (mapping) / musics or movies
+  - yardwork / learning + ideas
+  - altarea / napping
+  - journal / storylines
+  - castle building / gravitations
+  - entertainment & relaxation
+  - ???
+  - sleep
+
+libsendao:
+ - fix the shashmap to update with dhashmap
+ - may also need a CPU manager
+ - defragged chunks can go into a reallocation list
+
+Rad channel:
+ - data/card.js workers -> workers/card.js
+
+Admin channel:
+ - watch/control monitor
+ - view logfiles
+
+Card channel:
+ - toggle channels manually in Setup
+
+FFT channel:
+ - "sound characteristic:" a wave in a channel
+ - "sound description:" series of characteristics
+
+Search channel:
+ - create searchers for each tag
+  - on tag creation + manual
+  - set search repeat on low
+  - save results as global resources
+ - update user tag feeds
+
+EMF visuals:
+ - xMap=id,x[,y[,w[,h]]] map to div=id with x,y,w,h %ages
+ - menu to bottom of screen
+ - active context menu area
+  - context 'detector': on/off
+  - context 'recorder': start|stop save
+
+Leftovers:
+ - move empties records reports to logif(ebempties)
+ - notifications in browser
+ - 'new' action at top of notices
+ - fix the journal
+ - image tools & album upload
+ - new tags don't show up without a refresh
+ - gamedb has a problem with 'object' type?
+
+Game channel:
+ - db obj view/update
+ - fix refresh & validate registered data object path
+ - server should run game startup on load
+
+Circles:
+ - autogravity: automatically modify the gravity parameters when there is too little movement
+ - short blur: only blur around impacted areas
+
+
+Todo:
+- make marky work again
+* move web scanner to mongoose
+* add notifications back in, using web google results and tags
+- does logout end all sessions?
+
+- make a new signin page using mongo
+- support reg98 instead of reg99
+
+May 30:
+ - monitor supports compiling files
+ - monitor does not log every output command (writeQuietly)
+ - monitor does not repeat compiles/watches anymore
+
+May 19:
+ - added new user.html for mongo sessions
+
+May 18:
+ - more of the mongo support code for sessions
+
+May 17:
+ - fixed a bug with mongo socket registrations
+
+May 15:
+ - converted sessions to mongo
+ - mongo can load in singlets
+
+
+May 13:
+ - fixed more invalid cookies
+ - fixed invisible sockets
+ - cleanup for socket closures
+
+May 11:
+ - fixed invalid cookie support for anonymous browsers
+
+May 9:
+ - fixed whiteboard for nonusers
+ - added mongo web db interfaces
+ - started converting web db interface
+ - started converting session interface
+
+May 8:
+ - added mongo integration
+ - fixed startup timings
+ - finished whiteboard socket etc
+
+Apr 4:
+ - various radiant stuff
+ - started radiant checkoff
+ - updated combine and combineto/etc
+
+Apr 2:
+ - fixed combine
+
+Apr 1:
+ - added attribute concept
+ - added combine
+
+Mar 28:
+ - added directional blurwind
+
+Mar 24:
+ - fixed order of parent classes in common
+
+Mar 23:
+ - fixed up most of the game szn
+
+Mar 10:
+ - game updates
+ - grid data tables
+
+Mar 8:
+ - grid updates
+ - got game data working reliably
+ - printJSON moved to backend
+
+Mar 7:
+ - grid updates
+
+Mar 6:
+ - grid moved to card and realigned
+ - grid object movement
+
+Mar 6:
+ - grid moved to card and realigned
+ - grid object movement
+
+Mar 6:
+ - grid moved to card and realigned
+ - grid object movement
+
+Mar 6:
+ - grid moved to card and realigned
+ - grid object movement
+
+Mar 5:
+ - grid can now draw circles & squares
+
+Mar 4:
+ - fixed the clock and added a toggle for it
+ - wrote most of the grid
+
+Mar 2:
+ - fonts are working, although there are multiple advance issues
+ - fixed an issue with searching terrain ranges that are empty (no idea why it happens but it's in GetRange)
+ - worked up fonts a bit more - advance, bearings, ascent, descent, width all track I think
+ - fixed the schedule/clocks
+ - database deduping
+
+Mar 1:
+ - safe unicode support
+ - worked on fonts (mostly got them done)
+ - started on Gridiron
+
+Feb 28:
+ - circles looks decent
+
+Feb 27:
+ - circles fixed up pretty nice
+ - minor db painting fixes
+ - most of the game channel works
+
+Feb 25:
+ - appts (sort of)
+ - card activated
+
+Feb 24:
+ - updated gravity in circles
+ - fixed an issue w/ whiteboard submissions not showing up
+ - fixed the whiteboard and database sorting
+
+Feb 23:
+ - got the album upload working
+ - fixed the secure socket key
+ - got the game channel working, although it still has a fault somewhere?
+
+
+Feb 21:
+ - fixed the cookie issue, maybe. or one of them.
+ - got marky to solve between answers
+ - updated the album  upload
+ -
+
+Feb 20:
+ - got marky online
+
+Feb 19:
+ - restored most of marky
+ - binobjs updated
+
+Feb 18:
+ - fixed game crash bug
+ - added binobjs
+
+Feb 17:
+ - idk did stuff
+
+Feb 14:
+ - fixed the blur in the circles game!
+
+Feb 9:
+ - finished the album pre-uploader
+
+Feb 8:
+ - modified logging slightly
+ - more fixes to circles - new control bar, slowcpu option, more tuning
+ - better clock timer and other stuff for circles
+ - circles done for now. (ya right... ok I did a shitload more)
+ - built many parts of the albums
+
+Feb 7:
+ - fixed up circles.html
+
+
+
+Jan 28:
+ - sockets close
+ - sending full object details
+ - wrote printJSON for objects (json.stringify doesn't support!)
+
+
+Jan -25:
+ - got the gamedb link up
+
+Jan 18:
+ - a few 'minor' fixes
+
+
+Jan 12:
+ - got three working without webpack
+ - fixed an issue with #include being used in webpack. js files now require #includejs instead
+
+Jan 10:
+ - most of impthree
+ - fft visualizer
+
+
+Jan 3:
+
+Jan 2:
+ - updated ipc
+ - fixed object translation
+
+Jan 1:
+ - worked on albums
+ - cool ufo page lol
+ - fixed concepts idents display
+ - updated node and buffers
+ - updated ipc in several places
+
+Dec 31:
+ - fixed insane node utilization
+
+Dec 30:
+ - established remote debugging ability for node
+
+Dec 29:
+ - audio recorder now has FFT ability. (what do we do with it? LOL)
+ - worked on gameside db xface
+ - fixed schedule channels
+ - fixed tags adding on to existing tags
+ - verified indices do not over-save
+ - fixed a bug in sort
+ - fixed more tag bugs
+ - added loading by tagids/names
+ - clock is now assigned channels; white&black user-specific tags accepted also
+
+Dec 28:
+ - audio recorder. done
+
+Dec 27:
+ - fix clock schedule copies again
+ - fixed a minor issue with radiant
+ - fixed username/password can have spaces
+ - placeholders for clientside db xface
+
+Dec 26:
+ - fix clock
+ - post?a=remove deletes
+ - fix tags
+ - objects remove from existing tag locations on update
+ - fixed the schedules (only use latest schedule for clock)
+
+Dec 25:
+ - gameside db xface some more
+ - meta table interfacer
+
+Dec 24:
+ - work on gameside db xface
+
+Dec 23:
+ - fixed issue with omapread
+ - fixed issue with message (reading binary field)
+ - added binstring type
+ - 43: get database records db=str
+
+Dec 22:
+ - added readvarof to complete cmdSet
+ - added serverside database commands
+ - 40: dblist
+ - 41: dbget db=str, id=uint32
+ - 42: dbset db=str, id=uint32, value=binstr(obj), len=value.length
+
+Dec 21:
+ - fixed running all schedules all times (stringtime not return clone)
+
+Dec 20:
+ - fixed an issue that randomly materialized where a file didn't close again.
+ - clearSpace now has to save in the background for an unclear reason (stack recursion)
+ - fixed multiple schedules running clocks
+ - fixed userdata for clock?
+
+Dec 19:
+ - fixed some memory issues in windows
+ - split memory defragger into another thread ("freeze ray works in here")
+ - tested freeze ray in linux
+
+Dec 18:
+ - make dhashmap64
+ - make dhashmap work with huge ranges
+ - fix remaining memory mapping issues
+ - fix remaining memory leaks and issues
+
+Dec 17:
+ - memory updates and testing
+
+Dec 16/17:
+ - used Tree structure to make freeGroups/freeSingles searchable
+ - fixed up the Tree structure a lot
+ - fixed up DHashmap a bit
+ - switched to using DHashmap for freeGroup/freeSingle searching
+ - fixed up DHashmap a lot more
+ - added DHashmap testing, abandoned old DHash structure
+ - broke everything somehow once everything worked???
+
+
+Dec 16:
+ - fixed numerous issues with memory and quicklist management
+ - added ReleaseAll
+ - fixed memory leaks
+ - back to windows to fix client
+ - migrated client to new memory version
+ - watched more slices of client CPU (and they calmed down)
+ - client updates smoothly when moving (fucking slick it is, too)
+ - updates for Tree
+ - add Tree structure to store, find, &defrag released groups
+ - back to linux again
+
+Dec 15:
+ - initialize memory and report in monitor (there's a leak)
+ - better quicklist management
+
+Dec 14:
+ - 7 days to die: got my 6th death
+ - quit smoking
+ - great day
+ - separated the Bard and gave him the Gold (metal)
+
+Dec 13:
+ - configurable # of mem slots and sizes (in initMem)
+ - added logging for changesystem events
+
+Dec 12/13:
+ - migrated libsendao, fixed delete() not working
+ - finished migration to windows
+
+Dec 12:
+ - verified monitor has stabilized
+ - removed report from monitor
+ - pointerbuffer::releaseall
+ - migration back to windows, 64 bit configuration, c:\x64
+
+Dec 11:
+ - fixed the memory reporter
+ - basic defragment (clear empty groups)
+ - reporter mostly works; only shows items once; only shows old items
+ - found and fixed a leak in htable::clear when subclassed
+
+Dec 10:
+ - stack-tracing memory reporter
+ - stringbuf::append(char c, int n)
+ - memory testing
+ - memory tracker
+ - various fixes
+
+Dec 9:
+ - fixed memory leaks found via valgrind
+ - added notices to the clock, looks nice
+ - restored auto-editor to spi/game (not finished)
+ - fixed a few memory leaks found by hand in client
+
+Dec 8/9:
+- fixed duplicate timers/updated items and fixed updRecords call
+- clientside registration
+
+Dec 8:
+ - linked the emotion maps to the context maps to the input stream!
+ - got concepts etc to compile with various fixes
+ - moved Match to Concept
+ - finalized ChangeSystem
+ - removed memory leaks from monitor
+
+Dec 7:
+ - emotion maps
+
+Dec 6:
+ - tags can be editted
+ - concept lookup by prototype
+ - paramtersconcept moved to main
+ - expirable entries
+ - db keepalives
+
+Dec 5/6:
+ - fixed up the game - runs, mouse movement, kb movement, walls show up, terrain, all works
+
+Dec 5:
+ - fixed database
+ - fixed memory allocation
+ - added pools concept to card system
+
+Dec 4/5:
+ - fixed time formatting - no more 'am' during 'pm'
+ - fixed many memory references
+
+Dec 3:
+ - fixed split/string issues
+ - fixed allocation issues
+ - fixed some storage issues
+ - server runs again
+ - monitor runs again
+ - clock runs again
+ - schedules run properly
+ - push notifications work
+
+Dec 3:
+ - working on schedules - dropped the table (corrupted - multiple copies of records)
+ - fixed split()
+ - more memory fixes - mostly strdup and calloc
+
+Dec 2/3:
+ - more work on memory replacements
+
+Dec 2:
+- fixed card journal
+- fixed an issue with sorting (needed to floor instead of rounding)
+ - added an item to journal and it disappeared? hmr
+- most of the google search handler
+- finished the google search handler index part
+- wrote ParserTree, which will be tons of fun once it has an interface
+- added the start of the interface for PTree to card
+- fixed up Monitor commands and added '/usr/bin/web_restart'
+- lots of memory replacements in game
+- updated game mkbuild/mkdebug to support -O0
+
+Dec 1:
+ - server testing
+ - memory upgrades
+ - lots more memory upgrades
+ - gonna need more still... a lot more
+ - wwwcache testing
+ - scanned google search result structure
+ - autodetect page type
+ - wrote google search + results tables
+ - moved db writes to quickcycle
+
+Nov 30:
+ - added xLink to radiant; resolves some issues
+ - cardmeta now handles tags
+ - improved the metas somewhat
+ - broke the main C++ database (and radiant, but I fixed that)
+ - migrated the database to linux
+ - server testing
+
+Nov 29/30:
+ - finished buffering the spacing
+ - automate db recovery
+ - fixed db test
+ - wrote saveindexat
+ - added sort to base state
+ - added filedex to base state
+ - buffered the index as well
+
+Nov 29:
+ - cleaned up pushworker
+ - cleaned up events
+ - cleaned up bottle/ink
+ - monitor config 'restartwait'
+ = added database recovery! :)
+ - wrote a bunch of the filedex stuff
+ - fixed schedule display
+ - buffered the spacing
+ - saved the filedex state
+
+Nov 28/29:
+ - fixed another error with pw
+ - fixed up the journal
+
+Nov 28:
+ - cleaned up welcome/loading
+ - cleaned up pushworker
+ - added hyperclear option to pushworker: to show the notification
+ - added 'group' option to pw: shows the notification once per group
+ - cleaned up the memory allocators
+
+
+Nov 27:
+ - Moved messaging to the fastcycler
+ - cleaned up the worker.js and wwwcache.js
+ - supported tooltips
+ - added tags to seaplane
+ - cleaned up plan view
+
+Nov 26(later):
+ * Gamesys
+ - wrote PointerBuffer: upgraded to actually work, I think
+ - time for a ptrbuf test
+ * Radiance
+ - cleaned up log a bit more.
+ - writing Seaplane
+ - web request parser; fixed messaging
+ - a few other fixes
+
+Nov 26:
+ * Gamesys
+ - created PtrBuf to pre-allocate chunks of memory
+ - supported PtrBuf in classFactory
+ - wrote RegisterClass, which should replace SRClass calls
+
+Nov 25 (later):
+ - added 'oncreate' like 'onchange'
+ * monitor
+ - improved 'unpause' interface
+ - better log messages
+ - 4 second delay for rebuild
+ - fixed: closed pipe now triggers dying state
+
+Nov 25:
+ - fixed problems with the ctags viewer
+ - optimized the ctags viewer
+ - fixed pause overriding changed files in the Monitor
+
+Nov 24/25:
+ - outline view ctags viewer
+
+Nov 23:
+ - card manager processes socket messages and updates the page
+ - radFormSave used properly
+ - meta editor to shorten most existing editors
+ - it works, applied it to everything
+ - includes delete/update/append updates
+ - cleaned up the look a bit more
+ - started on the spider
+
+Nov 22/23:
+ - redid sessions again
+ - fixed db.find() to work properly
+ = fixed the rest of database searching
+ - fixed the rest of sessions (pretty easy after that)
+ - attention tracking (in session singlet/push worker)
+ - other push worker upgrades
+ - got the sockets back online
+ - updSettings to set any user data (like the menu or configs)
+ - default configs for push&attention
+ - added a clock
+ - socket messages get through and are handled properly
+ - got the clock working
+ - got the game client to wake up
+
+Nov 21/22:
+ - added cookies
+ - clarified sessions a bit
+ - cleaned up base a bit and added 'getcopy'
+ - cleaned up websock a bit
+ - linked new pckey cookie in auth, removed old sesskey
+ - cleaned up logging and fixed push
+ - cleaned up logging and fixed worker
+ - cleaned up logging and fixed schedules and timers
+ - timers were double-registering and failing; now they can double-register (it'll dump stack, but accept it) and screw themselves up (probably)
+ - resolved logic in worker and card schedules
+ - scripts to start and stop timers using pause variable
+
+Nov 20/21:
+ - app.register, app.poll, and fixed up timers
+ - app.schedule( time, callback, data )
+ - upgraded workcycle and all that
+ - added timers to schedule
+ - radtypes reload on xwatch-change (must also be wrapped in xwatch container, and preferably a test)
+ - rewrapped getSession
+ - fixed errant clock and db
+ - fixed errant worker/message process
+ - resolved method for paging journal
+ - added tons of logging
+ - fixed errant worker/schedule/timer processes and finished writing them
+ - moved logging back to being more ifly
+ - fixed radiant paging, clientside (not on server)
+ - added xMultiple
+ - fixed several issues with passing arrays to the backend (it works now)
+ - updated the push worker
+ - fixed some faulty authentication calls
+ - added has/not has to testCondition
+ - added processing of schedules for timers
+ - fixed remove items
+ - wrote schedule scheduler
+ - schedule event sends notification as well
+
+Nov 19/20:
+ - updated loading methods, added loading tags of things
+ - updated push, fixed some bugs
+ - added onAuthenticate, fixing login/session status
+ - users stay logged on if system crashes or they reload/leave the page
+ - updated rad, no longer overwriting styles on multiply-written elements
+ - broke it for several hours and finally fixed radiant again, 'xKey' and 'xVal' should work more deeply now
+ - fixed an issue where posted items had no id #s
+ - fixed up the notices editor - it allows using select/options
+ - fixed up sorting, it almost kinda works
+
+
+Nov 18/19:
+ - wrote runTemplate for card-evals
+ - wrote runNotification; it sends the notices after using runTemplate to translate them
+ - structure and improvements for notifications, timers, events, and scripts
+ - templates allow reading from database eg this.app.data.card.runTemplate(sess, "!=sendao:users:1\n@{JSON.stringify(sendao)}")
+  x flags: userid, tmSet, tmExpire, flagname, value
+  x scripts: message, notice, toggle, set, !=, ~=, ${}
+  x conditions: { 'id': '', 'userid': '', 'name': '', 'condition': '', 'last': '', 'last_tm': '', 'change_script': '', 'value_scripts': {} };
+ - wrote runCondition and experimental_context
+ - added conditions and scripts to timers
+ - added condition editor and updated resource editor
+ - added timer editor and notice editor
+ - load everything during startup
+ - started testing
+
+Nov 17/18:
+ - got Atom set up properly, after a lot of missteps
+ - fixed rad.js, index.html, card.html
+ - added minimal.html
+ - fixed &nbsp; and other encoding issues
+ - fixed waitAuthenticate
+ - fixed something else
+ - checked out push again
+
+
+Nov 17:
+ - there was a login
+ - set up OpenVPN and SambaFS
+ - Switch to SMB2.0 for Windows
+ - All is very good
+ - switch to atom, it's alright, it had working symbols, but they broke
+ - fixed the login sequence, and it broke again
+ - fixed everything and broke it all again
+
+Nov 16:
+ - moved cookies around
+ - rad.js would take a 'fl' element and turn it into a 'div'; fixed
+
+Nov 15:
+ - moved cookies around
+ - documentation
+ - almost got it but something was wrong so I went to bed!!!
+
+
+Nov 14:
+ - allow db autoget on tables without sorted fields
+ - support paging
+ - started testing paging w/ journal
+ - got journal posting working
+ - added 'now' to autoposting map (for date fields)
+
+Nov 13:
+ - temporary fix for sockey vs cookie
+
+Nov 11:
+ - added whiteboard to main index
+ - cleaned the whiteboard up REAL GUD
+ - wrote popAlert in backend.html; didn't finish it...
+
+Nov 10:
+ - isSpace/isWord
+
+Nov 09:
+ - started html parser for journal
+ - started journal
+
+Nov 07:
+ - designed em-path motor emote system
+ - organized concepts and todo
+
+Nov 06:
+ - finished the push backend
+ - fixed some issues defining tables
+
+Nov 05:
+ - fixed some monitor issues
+ - wrote the shells for push workers and notifications
+ - added onLoad for singlets
+ - added info to error for loading wrong database name
+
+Nov 04:
+ - moved worker registration from wwwcache to worker.js
+ - fixed a problem with Busboy throwing errors
+ - fixed internal socket & PFX chain registration issue
+
+Nov 01:
+ - wrote ChangeSystem
+ - upgrade libsendao maps
+ - cleaned up concept code (all files)
+
+
+Oct 19:
+ - change res.respond() to res.end() in sess.js
+
+Oct 16:
+ - fixed logging coredump from monitor
+ - added app.logIf( handle, messages ) and limit input from new database/sort/socket codes
+
+Oct 14:
+ - cosmetic card stuff
+
+Oct 6:
+ - replace perror with lprintf to report issues; core dump was from child unable to open the comm handle
+
+Oct 5:
+ - finalize notification research ( use web-push )
+ - decide on cheerio for sure
+ - wwwcache design
+ - combined change registry design
+ - finalized wwwcache db
+ - wrote changesystem.h
+
+Oct 4:
+ - notification research
+
+
+Sep 30:
+ - register for card changes
+
+
+Sep 29:
+ - added script and library card views
+ - added areafield, selectfield, and optionsfield
+ - libraries autoload into root from carduser details
+ - added ChangeRegistry and register-for-change command
+ - added 'my resources' for cards
+ - recompiled monitor for updated libsendao
+ - fixed xOptions
+ - added dropdown library select for scripts
+
+(missed some days)
+
+Sep 25:
+ - added ChangeQueue to store changes
+ - added Change Lookup
+ - added quickchange macros // APPEND(obj); // and CHANGE(obj, field);
+
+Sep 22:
+ - fixed monitor restart confusion
+ - pattern_augment type
+ - pattern apply
+
+Sep 21:
+ - new concept resolvers in solveconcept
+ - new concepts are all added to current mind
+
+Sep 18:
+ - fixed a few small bugs
+ - removed or clarified some excess logging
+ - no more report of excess connections / cleaned up openLoad/closeLoadHandler mismatch
+ - added context concept
+ - added context detection
+ - finished pattern walking
+ - new concept handling, should work well for processing most of the stimuli loop
+
+
+Sep 14:
+ - separated cards into classes
+
+Sep 11:
+ - ParametersConcept added (tracks multiple paramvals) and replaced list in InstanceConcept&arch
+ - Parameter scanning and matching
+ - Instance matching
+ - match list functions
+ - pattern testing
+
+Sep 10:
+ - lots of concept transitors in arch.cpp
+ - cleaned up the concept code
+ - bit of spec changes for concepts
+
+Sep 6:
+ - flexible time evaluator
+ - browse history w/ table detail resolver
+ - card mass loader
+ - startup mass load of unresolved objects
+ - added caches table
+
+
+Sep 5:
+ - fix radStore type specifier
+ - add login screen for game.html
+ - cleanup config screen for game.html
+ - minor db fixes
+ - fixes for Monitor (stop is more careful, restart is more careful, crash is more careful, logging is more appropriate)
+ - cleaned up senwebnode tester (don't report every success)
+ - finished basic trackers
+ - more minor db fixes (save after updates)
+ - separated cardizer into pieces (in controls/card*html)
+ - cardizer added resources list
+ - cardizer added modifiable browser menu
+ - cardizer added schedules editor, and changed database types slightly (include userid/modify scheduling)
+ - designed Cardauger
+
+Sep 4:
+ - cardizer frontend: edit trackers
+ - cardizer backend: user data, history, trending, top tags, stats
+ - cardizer backend: trending/history tables
+ - auto backend: added 'remove'
+ - got cardizer so far working
+ - improved db sorting a bit
+ - db compareBy (value, ">3") == true|false
+ - findBy() also includes presets (using compareBys)
+ - card: load history
+
+Sep 3:
+ - database auto get/post
+ - separated web from serve.js
+ - start of cardizer frontend
+
+Sep 2:
+ - base types for card miner
+
+Aug 31:
+ - added event tracking to senwebnode
+ - configurable event track cleaning
+
+Aug 29:
+ - design for AI brain architecture
+ - concept structures and classes and registry
+ - redesigned the cxmind interface
+ - started cxmind, walker, and heurist
+
+Aug 28:
+ - busboy: new package, adds enctype multipart form data support (used to read files)
+ - radiant: added support for clientside multipart form-data
+ - vfs: system updated and most issues resolved
+ - whiteboard: autolinkify and return 100 results. reversed output.
+ - undefined member cloneObject error fix
+ - a few database fixes for vfs supports
+
+Aug 25:
+ - 406 ("and other user errors"): don't generate error logs... nobody cares about malfunctioning client uis
+ - concept buffering
+ - concept comparison
+
+Aug 24:
+ - I swear I did stuff...
+
+Aug 23:
+ - migrate gsRegister/gsCommand to backend.html: now cmdRegister/radCommand
+ - separate whiteboard from forums html
+ - include whiteboard in game frontpage
+ - added automatic socket routing per command, cmdConfigure/radAutoSocket
+ - moved unrecognized 404 errors to report404 instead of reportError
+ - verified images are fine, not sure what's up with invalid requests for image/*
+ - got whiteboard fixed up
+ - better automatic commanding in backend.html
+ - fixed socket reconnection not retrying issue
+
+Aug 22:
+ - fixed issues with game clientside script layouts
+ - finish separating game and web consoles
+ - fixed an issue with bin2simple using length instead of byteLength
+ - blank get (list) command works
+ - fixed omap/htable copier
+ - fixed issues with set, although it still does nothing because gamevars are nothing.
+
+Aug 20:
+ - found some issues with IPC ('get' request crashes server with szn out of order error)
+ - fixed request not auto-aborting after requireAdmin call
+
+Aug 18:
+ - socket registration codes to transmit game messages through to javascript
+ - clientside uptime functions
+ - fixed lack of command source inclusion in return values
+ - got uptime command working all the way
+
+Aug 17:
+ - socket upgrade: per-page client ids
+ - RadRequest method: includes sockey from new registration (also RadPost, a shortcut for post requests (get is default))
+ - Socket message confirmations (debug mode should help identify problems)
+ - moved authorization and sessions to new sockets
+ - moved console over to new methods
+ - basic testing
+ - updated gameconsole.html w/ new methods as well
+ - gamex.js methods to interface to game
+ - worked out the rest of the bugs between the web and cpp servers. uptime command works all the way through.
+
+Aug 16:
+ - res in app.respond, sess, static, app.stax(static)
+ - fixed issue in radStore w/ undefined
+ - undid app.stax.res - it's totally invalid, sadly
+
+Aug 13:
+ - gamex.js/shell.js starts
+
+Aug 12:
+ - stopped logging 301 redirects as errors
+ - common urls log separately from interesting hits
+
+Aug 11:
+ - game.html updated with configuration editor and uptime status
+
+Aug 9/10:
+ - implemented get&uptime commands on server
+ - isolated game.html
+ - made gameconsole.html
+
+Aug 8:
+ - omap and message b&f work
+ - server socket interface works mostly
+ - implemented sizestr and writing size as well as str
+ - fixed issues in omap between server&client
+ - cleaned up AScript and compiler issues - there are many more of course
+ - fixed an issue in GetSocketError
+ - stubs for server get&set commands, and uptime
+ - added compiling for psuedoblocks (lines that are blocks)
+ - added for, throw, return and exit to compiler
+ - added for, throw, and return to interpreter. return operates the same as throw which operates the same as exit.
+
+Aug 5:
+ - clarified libsendao::Tree
+ - cppdb: added datasorter, a customizable tree by variable and ascending/descending
+ - added datasorter to classhead
+ - added SRIndex which didn't exist fsr, and SRSorter which calls SRIndex and adds a sorter
+ - added search interface
+ - added tree-search from non-start (eg for x>3&&x<9 is two tree-searches and everything between them, or one search for 3 and everything leading to 9 beneath it) and tree::compare
+
+Aug 4:
+ - use this.app.respond in sess.js
+ - added more respond.json code functions
+ - cleaned up socket reporting and logging, applied a fix for reopening and tested, it works
+ - tested other issues with sockets and uncovered many problems
+ - new session stuff seems fine
+
+Aug 1, evening:
+ - fixed reading and buffer/array differentiation in several places
+ - fixed some type issues
+ - simple types read and write correctly
+ - added sizestring, not custom sizes yet, just sint32 (which is the only thing the game uses right now anyway)
+ - added more debugging on the server
+ - back&forth for float, dv3, sizestr, bufstring, and string
+ - back&forth for omap
+ - almost b&f for message
+
+Aug 1:
+ - fixed 64 bit types
+ - fixed writing to binary buffers and changing to arrays
+
+
+July 31:
+ - added type constructor for omap and registration thereof (eccentric/castle.js)
+ - nullObject calls constructors
+ - game.Command works
+ - game.transmit works (mostly)
+
+July 28:
+ - szn.js: szn for htable and omap; imported guides for the others
+ - stubbed 'cppdb.js'
+
+July 27:
+ - game.js: startup, types, server status, load/update functions, mostly a shell, but some tracking started
+ - szn.js: writeObject, readObject, writeBuffer, readBuffer, and types by id or name
+ - szn.js: support for nested objects and special types (list/table/maps)
+ - ipc: better interface with app
+ - game.js: message and command wrappers
+
+July 23:
+ - fixed db write offset after reloading
+ - fixed db sorting not loading with index
+ - fixed registration code sent with socket
+ - fixed db socket message distribution code
+ - fixed socket receive messages
+ - fixed forum implementation of username and finished receive, added watch
+ - main whiteboard chat works with two users
+ - fixed game server to actually implement opening the socket
+ - game server compiles in windows again, plus a few more fixes
+ - basic IPC: open the socket and write to it (doesn't complete or close)
+ - discard old node-ipc package
+
+July 21:
+ - database sorting support
+ - database search by inequality
+ - database search start,range
+ - forum implementation
+ - registration for new table records
+ - sort testing
+ - search testing
+ - forum skin
+
+
+June 23-July 21:
+(gluton)
+ - hash upgrades and fixes
+ - concept dhash
+ - storage upgrades
+ - szn type saving
+ - unix local control socket and webuser connections
+(radnode)
+ - szn binary js type reading
+ - gluton typelist reader
+ - forum structures
+ - upgraded central node (app.js): moved most functionality to eccentric
+(other)
+ - moved libraries to sourceforge
+ - updated reference to include deployment instructions
+(monitor)
+ - fixed daemon support
+ - close opened files in libsendao
+ - easier build&install
+
+June 22:
+ - imported code to linux
+ - fixed sendao for linux
+ - fixed gcommon for linux
+ - fixed gserver for linux
+
+June 21:
+ - replace sdhashmap in strmap with dhashmap to avoid string loops
+ - fix dhashmap add past maxdepth
+ - tested through main runtime
+ - fixed server to compile
+
+June 20:
+ - fixed dhash, testing
+ - added sdhash, dhashmap, sdhashmap
+ - used sdhashmap in strmap
+ - used dhashmap in ptrmap
+
+June 19:
+ - updated dhash tests
+
+June 16:
+ - fixed up dhash issues. added tests for it in GCommon
+
+June 15:
+ - most of dhash. _get, get, set, alloc
+
+May 23:
+ - save/detach/free/load/destroy/save cycle works.
+ - save and load data from parent types
+ - finished testing storage
+ - fixed up concept registry (allocators, some missing typeids)
+ - finished testing concept registry
+ - updated concept plan
+
+May 21:
+ - added lookup htables for types by id, name, and typeptr
+ - U32 bit shifting to clean 64 bit pointers
+ - finished properly updating dirty, mainindex, rowtype/ch->scan, and disksort
+ - refuse to write loaded pointers and other safeties
+ - fixed header size write/read mismatch
+ - cleaned up lookupclass calls, which probably took a lot of time at times
+ - hfree/classfree/classfreex 'local' versions (won't remove from db)
+ - fixed dmap/smap/tmap/omap delete functions to update usedkeys when removing end of htable
+
+May 15:
+ - 64-bit htable, dmap, and ptrmap
+ - fixed PATH variable and enabled CLEAN for common/client
+ - tested and debugged 64 bit maps
+ - probably finished fixing ptrmap
+ - added exceptions for invalid szn paths
+ - updated list serialization (it was completely broken...)
+ - finished list szn and linking to it, tested and working
+ - fixed object szn test
+ - restored sanity to datastore (mainindex -> mainid, destroy/release work properly, safer lookups)
+ - eclipse is working great! and my patch is almost committed :D
+
+May 14:
+ - use srvar<table,member> in test packet dmap/smaps
+ - fix szn_objtype references (needed to include in read and properly nest)
+ - disabled the detailed logging we needed for all of that
+
+May 11-13:
+ - fixed 'del not found in PATH'
+ - eclipse cleans and builds properly mostly, fingers still crossed
+
+May 10:
+ - fixed mismatching table essify registrations
+ - debugged table storage
+ - srvar<Table,Subclass>
+
+May 9:
+ - finally got eclipse to a sane state (fingers crossed)
+ - repaired most of szn issues/missing code
+
+May 6-8:
+ Eclipse has been acting up so things have been going slowly. Still, I managed to get some things done.
+ - hopefully fixed eclipse's nastier habits
+ - debugged the storage issues further
+ - test packet now contains maps of all types
+ - srvartable<tabletype, objtype> and srvartable<tabletype> should work now
+ - fixed up r/essifiers for maps
+ - restored basic szn logic points
+
+May 5: (Saturday)
+ - resolved some of the invalid storage
+ - finished fixing up tracking of readbytes/writebytes
+
+May 2: (Wednesday)
+ - eclipse: fixed the exception logged by eclipse
+ - eclipse: fixed colors for the console, along with logging more console lines and larger console buffer
+ - eclipse: fixed internal builder wasn't displaying on console (from discovery options)
+ - fixed: free_obj instead of obj_free (freeing wrapper vs freeing contents)
+ - added: uint key callbacks (unused but nice to have)
+ - minor fixes and cleanups
+ - fixes to htable/smap/dmap remove/del functions
+ - datastore::release and HFree, similar to destroy. destroy calls release
+ = this deprecates delete. delete should never be used, HFree should be used.
+ - fixed Search() to never delete lists
+ - read process now ignores invalid file data (such as what's been writing lately)
+
+Apr 21:
+ - updating eclipse
+ - try to fix bug in eclipse using the plugin development env
+ - got a compile through the bug eventually: all ids are zero
+ - inspect ids of objects before saving
+ - new syntax highlighting in eclipse
+ - debugging database index
+
+
+Apr 20:
+ - htable::slice(start,count,cloneoptions)
+ - datastore::sliceindex(name,start,count)
+ - datastore::getindex(name)
+  - retrieve the index list as an iterable examinable structure/class
+ - use sliceindex in concept test
+
+Mar 29:
+ - pattern detection designs
+
+Mar 26:
+ - srvarlist() wasn't setting offset or name for its variables
+ - concept datastore test (success)
+ - new game progress bar (pretty sweet how easily they work)
+
+Mar 25:
+ - srident for concept subclasses
+ - added widget subtypes to registry
+ - made sure all widgets are registered
+ - cleaned up startup
+ - added srtypebase(char*varname) and srsubclass(int type)
+ - srtypebase() for concepts
+ - concept flow design
+ - basics for cx: Cognitor, Buffer, Trigger, and Mind
+ - libsendao::Pointerbuffer and libsendao::Prepare, -senlists.h, -list_sparse.cpp
+
+Client Upgrade (2):
+ - use Progressbar->mapto(libsendao::Prepare)
+ - also write lprintf results to a background startup shell console.
+ - more progress bars. for 'new game', 'load game', and 'connect to server'
+
+libsendao::Smartpointer
+ - track reference count
+ - support opengl or other "external" pointers with handlers
+ - set preallocation and recycling rules
+  - eg opengl buffers are NOT preallocated or recycled. each buffer must be allocated individually per its size and opengl handles the main recycling buffer.
+  - however opengl OBJECTS can be preallocated en masse.
+  - there could be some advantages to a similar single buffer area but we don't really care
+  - instead we'll preallocate n records when m records are left.
+ - customize alloc() and dealloc()
+ - track pointers in 3 regions:
+  - mainbuffer + allocation_bottom
+  - allocation_bottom += allocation_amount
+  - mainbuffer + alloc_bottom = memory is "all" used
+  - tlist *unused; = memory within alloc_bottom that is NOT used
+ - copy-construct a new Smartpointer group to create a temporary memory region if a lot of memory is going to be shuffled
+ -
+
+
+Sores:
+ - key binding. eg arrow keys should bind to scrollbars when scroll area focuses.
+ - 2d childPosition and shapeByChildren should use new offset+2
+ - 2d color implementation
+  - allow alpha values
+  - allow bg & fg set at once
+  - allow bg default to off/transparent
+ - 2d string font image buffers are never freed
+ - fonts: support advancement alignment
+ - opengl image wrapper: increment/decrement refcount
+
+Plan:
+ * finish up the conceptor plan
+ - test user input
+ - add more fonts and wiser (Tracked) font sizes/faces
+ - make sure to allow for multicolored text.
+
+General Optimization Tasks (GOT):
+ - maintain internal copy of 2d image buffers and only update opengl data on changes
+ - write a separate shader (possibly two, or more) for optimizing text render flow
+ -
+
+Advanced Workings (AW):
+ https://www.khronos.org/opengl/wiki/Framebuffer#Blitting
+https://www.khronos.org/opengl/wiki/Multisampling
+https://www.khronos.org/opengl/wiki/Image_Load_Store
+https://stackoverflow.com/questions/7699385/opengl-glsl-writing-a-smart-texture-shader
+
+2D Drawing:
+ - alternate font libraries
+ - understand how buttons can have 2 visual states (onclick up/down)
+  - modify the code GUIObject::redraw( void )
+ - note: draw should only occur during state changes
+  - guiobject::addState( int *ptr );
+  - addState( &clicking );
+  - mousedown { redraw() }
+ - also for text input we use a special continuous state:
+  - addState( NULL );
+  - redraw() { clear all elements ; draw again ; request screen redraw }
+
+
+
+
+ *data below this point has been abandoned! tread carefully as ghosts may linger!*
+
+
+
+Versioning:
+0.1a: (December 1st)
+ x creatures working again
+ x joints
+ x plants working again
+ x htm patches
+ - water
+  - surface & rain
+ - terrain
+  - hills & ranges
+ x animations working again
+0.1b: (January 1st)
+ - gravity erosion
+ - beach erosion
+ - waterflow erosion & weathering
+ - time machine & event time
+ - creatures
+  - fourlegs
+ - plants
+  - trees
+ - terrain
+  - high flatland, peak lines
+ - water
+  - channels
+ - kinematics
+ - surfacing
+ - gathering
+0.1: (January 25th)
+ - smooth op
+ - skills
+ - commands
+ - chat
+ - serverside
+ - click to inspect
+0.1.1: (February 1st)
+ - creation commands
+0.1.2: (March 1st)
+ -
+0.1.3: (April 1st)
+ - vfs
+0.1.4: (May 1st)
+ - text editor
+0.1.5: (June 1st)
+ - shaders
+0.2: (July 1st)
+ - skins
+ - ingame 2d/3d panel surfaces w/ 2d interfaces
+
+0.7: (August 1st)
+ -
+
+~Next~
+ - click-to-select needs fixing
+ - anchor objects to the world and move properly
+
+~Current~
+ - finish the joint testings
+ - weather: surface impacts
+ - water: surface puddle map
+
+~Questions~
+ - How much RAM are we using? Where is it used?
+  - develop a RAM buffer of preallocated chunks
+  - memory tracking level 2...
+   - ignore the existing memory debugging and do it agian...
+   - safealloc(size) ->
+
+* Needed Optimizations:
+ - dynamically resizing tables are needed in a few places
+  * sometimes we have lists w/ too large a population to search
+  * other times it's the only way to map discontiguous sizes of results
+
+* Creatures
+ - feet are slightly off
+
+* Kinematics
+ - another possible constraint is axis + angledir or even axis + movement quadrant
+ - reversing the kinematic doesn't work. another option is to actually reverse it but ... it should just work.
+  - this is the kine_step_fc that is broken. not sure what's up w/ that.
+
+
+* Plates
+ - two plates: rolling hills sin interference pattern
+ - three plates: mountains
+ - dynamic circular plates
+ - support for platelike affect regions (maybe lines too)
+
+* More Terrain
+ - some precalculated/informational: deserts, oceans
+ - calculate some random lines for mountain peaks to form
+ - others random/partially calculated: mtn high flatlands, peaks
+
+* Water
+ - channel detection? channels would be great...
+
+* Walking Surfaces
+ - seems fairly straightforward...
+
+*Timeline
+  - running vs upcoming
+   - change to 'runtime' vs 'eventime'
+   - runtime: instant calls at exact times
+   - eventime: predictive calls generating events that proc via 'runtime' and can be accessed via 'timemachine'
+
+FPS
+ - global 'draw changed' flag
+ - calculate 'fps limit' from draw time
+ - post redisplay if time<fps_limit and draw_changed
+
+Camera
+ - update (all objects on planets) player->self when moving to be rotated properly
+
+~Deferred~
+ - calculate the center of a Geom
+ - 2d bsp
+ - proper htm sphere intersection
+
+~Todo~
+ - animations
+  - socials and emotes
+  - dances
+ - dynamics
+  - gait (walking)
+  - reaching and grasping
+  - looking at targets
+   - player creature
+ - collisions and physics
+  - gravitation and friction
+ - object actor interaction
+  - picking animations
+  - fishing? idk
+ - actor actor interaction
+ - scripts
+
+~System notes, current (2017)
+
+Creature Considerations:
+ - crossbreeding
+ - age and growth and stages (birth, puberty, maturation, aging)
+ - need a compatibility mask for breeding w/ each other
+  - creatures using the same build process can be bred
+  - eventually creatures using difference build processes can be bred with specialized routines
+  - breed using type-based processors
+
+Language Tables:
+ - comprehensive list of phonemes
+  - "flavor" for each phoneme (guttural, harsh, light, etc)
+ - build limited lists based on tones/flavor mixes (which will be based on species data)
+ - compile common word dictionary (to be stored serverside)
+ - create names from language table
+
+Shell:
+ - add shell buffer
+ - prefix commandline with prompt
+ - add shell output
+ - shell window doesn't display full size
+ - no anchor to screen nor screen width
+ - 2d render coords are isomorphic to screen instead of a window
+
+* Text Editor
+ - copy from Shell widget
+ - add line numbers, scroll
+ - integrate filebrowser save/load
+ - copy/paste, panels, syntax hiliting
+
+~System notes, old (2016-)
+
+Systems:
+
+szn: Serialization
+rde: Parsing (recursing descent expressions)
+rdf: Factory (recursive descent factory)
+scr: Scripting
+lib: Library
+ - imported classes and class functions
+obj: Database
+
+- Widget Language and Factory
+- Modelling Language and Factory
+- Script Library
+ - szn: serialization operators for strings
+ - rde: builtin data handlers
+ - lib: classdefs
+- Dynamic Factory (rde+szn+lib+dyncall)
+ - widgets & models
+ - templates & pages
+Current:
+ - update physics processing
+ - update domelement processing and rde/variants
+
+ - Common Processing Upgrade
+  - Physics processing
+  - CSG+BSP:
+   - maintain color on transformed vertices
+   - establish texture in shaded objects
+
+  - System Pointer Map
+   - hash of all pointers
+   - registry vfs
+   - struct of extra data
+   - classdef, refcount, optional aux smap (only created if used)
+   - 4 regions: strings, classdefined(classfactory), freerange(random/unaccounted mallocs), and structural(smap,omap,list)
+   - let's try to avoid using 'new' on classdef objects. ClassFactory may be slower but it can do accounting for us.
+  - SZNLib
+   - handle and secure scripted access to game variables
+   - reference the system pointer map
+  - RDE Type: "rde+szn"
+   - attach to language elements
+   - render to variables via sznlib
+
+ - Graphics Handling
+  - LOD Model Shader
+   - Drawable format for input buffers
+   - shader code for LOD resolution
+  - Skeletal shader
+optional prereqs: lod model shader
+   - moar research.
+
+ - GUI improvements
+  - box model processor
+    - dom patterns
+     - basic styles, background, background-color, background-image, float, border, margin, padding, color
+     - tables, cellspacing/cellpadding, rowcount/colcount
+
+ - system -> Objects
+  * 3d layout/representation of contents
+  * 2d gui attachments to objects (via scripts?)
+
+ - code management systems
+  - copyover, server build/pull control
+
+*Storage
+
+
+
+=== New Modules
+
+* Api::Ascript
+ - console interface
+ - script storage & quick reference area
+
+* Object Inspector
+ - connect: ascript
+ - 2d runtime interface to view and edit objects
+ - create
+ - view surfaces and vertices
+ - csg :: add, remove
+
+=== Improvements
+
+* Ptr::Map
+ - use classfactory instead of cleanalloc wherever possible
+ - in safefree, check the ptrmap and use classfree
+
+* Dyncall Integration
+ - handle struct return types and arguments
+ - handle sizestr variables and encoding (pointer -> binary buffer)
+ - support dyncall classops
+
+* Szn
+ - inline structures
+ - union operators and conditional loading
+ - test logging (show tree)
+
+* Memory
+ - time-based storage and archival(unloading)
+  - prioritize and time out objects
+  - support removal from header index via archival and archival search support
+
+=== Bugs & Fixes
+
+ - csg doesn't create the proper output on merge. (try an isolated merge)
+ - use the object inspector to examine vertices and planar structure.
+
+
+=== Alternate Ideas
+
+thread 8: requests
+ - scriptable user modes (eg mouse-move-object mode, console mode, menu mode) with partial UI replacement patterns
+ - make a clock that animates the sun and turns the planet
+
+thread 9: graphics
+ - skin and cloth
+  - joint position calculation per vertex
+  - plotting run (calculate position at 0)
+  - test runs (calculate with each joint at min and max range)
+
+thread 10: futures
+- pressurized skeleton string animation
+- hereditary behaviors
+- genetic memory?
+- rpg mechanics: skill tree
+- story ai: guilds and umbrella corps
+- automated audio thread twister
+- sense dynamics engine
+- overtime ai... adds complications to combat (for npcs and pcs) in the form of failed saving rows, random environmental events (which happen all the time), and god events (which also happen far too often)
+
+CPU/Time Management
+ - 'unlocked' cycles
+  - computer malfunction & slowdown times
+  - user inputs
+  - network inputs [client/server]
+ - 'clock' cycles
+  - episodic event line: time changes, planets/stars/sun locations update, physics propagates
+ - 'nonclock' cycles
+  - pre-calculation
+  - configure time, animation, and physics expressions
+  - random events
+
+
+
+
+
+ - Update watch using arrow functions and a lookup table.
+ (done.)
+
+- Add a console where you can run debug commands through the node rad server
+ (done. blitzTemplate("tools_console") from #include controls/console.html.)
+
+- Secure the backdoor using a configurable password, then publish the shadows
+
+- A blog
+
+- GLUTON Serverside interface
+ - SZN reader (tool/szn.js)
+  - typespec storage in GCommon
+  - support external use (for LocalSocket or other things)
+   (done)
+  - data/szn.js (read, write)
+   (structure done)
+   (bitwise ops done)
+    - objects
+    - tests
+    - typespec loading
+ - LocalSocket (tool/localsocket.js)
+  (structure done)
+  - use SZN format
+  - local virtual file socket
+
+- Multiserver Solution?
+ - Database Grid
+  - RAID principles, each server is a disk unit
+  - Server data ownership & transfer
+ - Multiplexed Memory
+  - Laid on top of database
+  - Realistically Realize It's Slow As Shit And Implement Accordingly (asynch)
+  -

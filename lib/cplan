@@ -1,0 +1,21 @@
+Leftover:
+ Console:
+  - allow multiline entry and save/use/delete queries
+
+Monitor:
+ - use messages to logfile/shell as indication that process is running even if psgrep doesn't find it
+ - don't kill so quickly new processes anyway
+ - allow more retries before giving up
+ - sometimes it gets stuck unable to start processes
+ - should have better visibility for actual crashes
+  - track all crashes to one file as well as the multiple dated crash-specific files
+
+
+
+Other:
+
+Local socket
+
+
+Web socket
+  - periodically clean up connections and registrations
