@@ -1,0 +1,758 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head splash>
+  <title>Radiant Cast</title>
+  <link rel=stylesheet href='/css/styles.css'>
+  </link>
+</head>
+
+<script src='/js/lib.js' type='text/javascript'></script>
+<script src='/js/libtoo.js' type='text/javascript'></script>
+<script src='/js/vst.js' type='text/javascript'></script>
+<script src='/js/rad.js' type='text/javascript'></script>
+<script src='https://mrdoob.github.io/stats.js/build/stats.min.js' type='text/javascript'></script>
+<!--
+Todo
+
+
+ -->
+
+<body style='color: #c3c3c3 ; background: black; margin: 0px'>
+
+  <div id=splashpage style='min-height: 100%; min-width: 100%; padding: 0px; margin: 0px; background: white; z-index: 200; position: fixed; left: 0px; top: 0px;'>
+    <div id=splashpage2 style='margin: 0px auto; height: 100px; width: 200px; padding: 10px; margin-top: 100px; background: black; color: green; font-size: 18pt'>
+      <div id=splashlabel style='margin: 0px auto; padding: 5px; max-width: 150px; text-align: center; border: 1px solid green; background: black; color: tan'>
+        Loading
+      </div>
+    </div>
+  </div>
+
+  <div id=mainscroll xStyle='width: winW-25; height: winH-101' style='margin-top: 16px; margin-left: 8px; font-size: 14pt'></div>
+  <div id=controller xStyle='width: winW; height: 60' style='padding-top: 16px'><div xCast=controls></div></div>
+
+  <loadwheel></loadwheel>
+
+  <!--  setup -->
+
+#include tpl/radlib.html
+#include tpl/backend.html
+#include tpl/struct.html
+#include tpl/socket.html
+#include tpl/mauth.html
+
+  <templates>
+
+<div xTemplate='home'>
+  Homepage
+</div>
+
+<div xTemplate='controls'>
+<fl class=btn xCmd='viewUploader()'>Objects</fl>
+<fl class=btn xCmd='viewCategories()'>Categories</fl>
+<fl class=btn xCmd='viewMaps()'>Maps</fl>
+<fl class=btn xCmd='viewScripts()'>Scripts</fl>
+<fl class=btn xCmd='logout()'>Logout</fl>
+</div>
+
+<div xTemplate='login'>
+<div xCmd='login_signup()'>Sign up</div>
+<div xCmd='login_signin()'>Sign in</div>
+</div>
+
+<div xTemplate='maps'>
+
+<fl>Maps:</fl>
+<cl></cl>
+<div xWatch=maps>
+<fl xLoop=maps xKey=k xVal=v>
+  <fl>#v.name</fl>
+  <fl class=btn xCmd='constructMap("#v._id")'>Construct</fl>
+  <fl class=btn xCmd='editMap("#v._id")'>Edit</fl>
+  <fl class=btn xCmd='demoMap("#v._id")'>Demo</fl>
+  <fl class=btn xCmd='delMap("#v._id")'>Delete</fl>
+  <cl></cl>
+</fl>
+<cl></cl>
+<fl class=btn xCmd='newMap()'>New map</fl>
+<cl></cl>
+</div>
+
+</div>
+
+
+<div xTemplate=maped>
+<form id=uploadfor2m xCb=sentmap xForm=uploader.map method=post action='/plex/map'>
+<input type=hidden name=_id>
+<fl>Map #uploader.map._id (#.mapn)</fl>
+<cl></cl>
+<fl>Name:</fl>
+<fl><input type=text name=name></fl>
+<cl></cl>
+<fl>Envmap:</fl>
+<fl><input type=file name=envmap></fl>
+<cl></cl>
+<fl>Skydome:</fl>
+<fl><input type=file name=skydome></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+</form>
+<cl>&nbsp;</cl>
+<fl>Satellites:</fl>
+<cl></cl>
+<div xWatch=maps.#[.mapn].sats>
+  <div xLoop=maps.#[.mapn].sats xKey=k xVal=v>
+    <div xTest='"#[maps.#[.mapn].sats.#[k].deleted]"!="1"'>
+      <form xForm=maps.#[.mapn].sats.#[k]>
+        <fl style='width: 100px'>Name:</fl>
+        <fl><input type=text name=name></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Z angle:</fl>
+        <fl><input type=text name=zangle></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Speed:</fl>
+        <fl><input type=text name=speed></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Texture:</fl>
+        <fl><input type=text name=texture></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Color:</fl>
+        <fl><input type=text name=color></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Size:</fl>
+        <fl><input type=text name=size></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Distance:</fl>
+        <fl><input type=text name=distance></fl>
+        <cl></cl>
+        <fl style='width: 100px'>Light intensity:</fl>
+        <fl><input type=text name=intensity></fl>
+        <cl></cl>
+        <fl class=btn xCmd='delMapsat("#.mapn", "#k")'>Delete #.name</fl>
+        <cl></cl>
+      </form>
+    </div>
+  </div>
+</div>
+<div class=btn xCmd='addMapsat("#.mapn")'>Add Map Satellite</div>
+<cl></cl>
+<div class=btn xCmd='saveMapsats("#.mapn")'>Save Satellites</div>
+<cl></cl>
+</div>
+
+
+<div xTemplate=gameview>
+<div class=fl xStyle='width: winW-325; height: winH-125' id=gameviewer></div>
+</div>
+
+<div xTemplate=mapview>
+<div class=fl xStyle='width: winW-325; height: winH-125' id=mapviewer></div><fl style='width: 230px'>
+
+<div class=cl xCmd="toggleControls('tools')"><fl id=ctrl_tools_arrow>&gt;</fl><fl>Tools</fl><cl></cl></div>
+<cl></cl>
+<div id=ctrl_tools xStyle='display: "#[ctrl.tools.display]"'>
+  <form id=ctrl>
+<fl><select name=catfilter onchange='updmapFilters()' xOptions='allcats,_id,name'></select></fl>
+<cl></cl>
+<fl xWatch=filtered_objects><select name=object xOptions='filtered_objects,_id,name'></select></fl>
+<cl></cl>
+<fl class=btn xCmd='createObject()'>Create object</fl>
+<cl></cl>
+<fl><input type=checkbox name=snaptogrid></fl>
+<fl>Snap to Grid</fl>
+<cl></cl>
+<fl><input type=checkbox name=snaptomesh></fl>
+<fl>Snap to Objects</fl>
+<cl></cl>
+  </form>
+</div>
+
+<div class=cl xCmd="toggleControls('grid')"><fl id=ctrl_grid_arrow>&gt;</fl><fl>Grid</fl><cl></cl></div>
+<cl></cl>
+<div id=ctrl_grid xStyle='display: "#[ctrl.grid.display]"'>
+  <form id=ctrlgrid>
+<fl><input type=checkbox onchange='changeGrid()' name=usegrid></fl>
+<fl>Use grid</fl>
+<cl></cl>
+<fl>Unit size:</fl>
+<fl><input type=text name=unitsize onchange='changeGrid()' size=4 value=0.5></fl>
+<cl></cl>
+<fl>Grid size:</fl>
+<fl><input type=text name=gridsize onchange='changeGrid()' size=4 value=50></fl>
+<cl></cl>
+</form>
+</div>
+
+<div class=cl xCmd="toggleControls('camera')"><fl id=ctrl_camera_arrow>&gt;</fl><fl>Camera</fl><cl></cl></div>
+<cl></cl>
+<div id=ctrl_camera xWatch=selectedobj xStyle='display: "#[ctrl.camera.display]"'>
+<form id=ctrlcamera>
+<fl><input type=checkbox onChange='changeCamera()' name=orthocam></fl>
+<fl>Orthographic</fl>
+<cl></cl>
+</form>
+</div>
+
+<div class=cl xCmd="toggleControls('object')"><fl id=ctrl_object_arrow>&gt;</fl><fl>Object</fl><cl></cl></div>
+<cl></cl>
+<div id=ctrl_object xWatch=selectedobj xStyle='display: "#[ctrl.object.display]"'>
+<fl xTest='"#selectedobj"!=""'>
+  <fl>Selected: #selectedobj</fl>
+  <cl></cl>
+  <fl class=btn xCmd='deleteObject2()'>Delete object</fl>
+  <cl></cl>
+  <div xWatch=mapobjs.#selectedobj style='width: 220px'>
+<form id=uploadform8 xForm=mapobjs.#selectedobj>
+    <fl>Script:</fl>
+    <fl><select name=scriptid xOptions="scripts,_id,name"><option value=''>None</option></select></fl>
+    <cl></cl>
+    <fl>Position</fl>
+    <cl></cl>
+    <fl>X:</fl>
+    <fl><input type=text name=x size=6></fl>
+    <cl></cl>
+    <fl>Y:</fl>
+    <fl><input type=text name=y size=6></fl>
+    <cl></cl>
+    <fl>Z:</fl>
+    <fl><input type=text name=z size=6></fl>
+    <cl></cl>
+    <fl>Rotation</fl>
+    <cl></cl>
+    <fl>rotX:</fl>
+    <fl><input type=text name=rotX size=6></fl>
+    <cl></cl>
+    <fl>rotY:</fl>
+    <fl><input type=text name=rotY size=6></fl>
+    <cl></cl>
+    <fl>rotZ:</fl>
+    <fl><input type=text name=rotZ size=6></fl>
+    <cl></cl>
+    <fl class=btn xCmd='updateMapobj()'>Update</fl>
+</form>
+  </div>
+</fl>
+<cl></cl>
+</div>
+<cl></cl>
+
+<div class=cl xCmd="toggleControls('map')"><fl id=ctrl_map_arrow>&gt;</fl><fl>Map</fl><cl></cl></div>
+<cl></cl>
+<div id=ctrl_map xStyle='display: "#[ctrl.map.display]"'>
+<fl class=btn xCmd='saveObjects()'>Save</fl>
+<cl></cl>
+<fl class=btn xCmd='importMap("#mapid")'>Import Visuals</fl>
+<cl></cl>
+<fl class=btn xCmd='importCollider("#mapid")'>Import Colliders</fl>
+<cl></cl>
+</div>
+<fl class=btn xCmd='helpMe()'>Help</fl>
+<cl></cl>
+</div>
+
+<div xTemplate='helpwin'>
+<div>Basic Controls:</div>
+<div>Click on background, or hold spacebar and click anywhere to adjust camera:</div>
+<ul>
+  <li>hold ctrl or right click to pan</li>
+  <li>move mouse to rotate</li>
+</ul>
+<div></div>
+<div>Click on objects to move</div>
+<ul>
+  <li>shift click drag to clone object</li>
+  <li>ctrl drag to move on x/y axis</li>
+  <li>normal drag to move on x/z axis</il>
+  <li>drag on focus circles to rotate</li>
+  <li>drag on focus lines to translate</li>
+</ul>
+<div>Snap to grid also makes rotations easier</div>
+<div>Control+Z to undo</div>
+</div>
+
+<div xTemplate='scripts'>
+<fl>Scripts:</fl>
+<cl></cl>
+<div xWatch=scripts>
+<fl xLoop=scripts xKey=k xVal=v>
+  <div xTest='"#v.deleted"!="true"' style='width: 600px'>
+    <fl>#v.name</fl>
+    <fl class=btn xCmd='editScript("#v._id")'>Edit</fl>
+    <fl class=btn xCmd='delScript("#v._id")'>Delete</fl>
+    <cl></cl>
+  </div>
+</fl>
+<cl></cl>
+<fl class=btn xCmd='newScript()'>New script</fl>
+<cl></cl>
+</div>
+</div>
+
+<div xTemplate=newscripted>
+<form id=uploadform7 xCb=sentnewscript method=post action='/plex/script'>
+<input type=hidden name=_id value=''>
+<fl>New Script</fl>
+<cl></cl>
+<fl>Name:</fl>
+<fl><input type=text name=name value=''></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+<cl></cl>
+</form>
+</div>
+
+<div xTemplate=scripted>
+<form xCb=sentscript xForm=scripts.#[.sno] method=post action='/plex/script'>
+<input type=hidden name=_id>
+<fl>Script #.sid</fl>
+<cl></cl>
+<fl>Name:</fl>
+<fl><input type=text name=name></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+<cl></cl>
+</form>
+<div xWatch='scripts.#[.sno]'>
+  <div xLoop=scripts.#[.sno].events xInd=k xVal=v>
+    <fl>Event: #k</fl>
+    <fl class=btn xCmd='editScriptEvent("#.sid", "#k")'>Edit</fl>
+    <fl class=btn xCmd='deleteScriptEvent("#.sid", "#k")'>Delete</fl>
+    <cl></cl>
+  </div>
+</div>
+<form xId='scriptutil_#[.sid]'>
+<fl>Select event:</fl>
+<cl></cl>
+<fl><select name=event>
+<option>init</option>
+<option>load</option>
+<option>destroy</option>
+<option>click</option>
+<option>collide</option>
+</select></fl>
+<cl></cl>
+<fl class=btn xCmd='addScriptEvent("#.sid")'>Add Event</fl>
+<cl></cl>
+</form>
+</div>
+
+<div xTemplate=scriptevented>
+<fl>Script #.scriptname</fl>
+<cl></Cl>
+<fl>Event: #.event</fl>
+<cl></cl>
+<form xCb=sentscriptevent method=post action='/plex/scriptevent'>
+<input type=hidden name=id value="#.sid">
+<input type=hidden name=event value="#.event">
+<fl><textarea name=script rows=12 cols=80>#.script</textarea></fl>
+<cl></cl>
+<fl class=formbtn>Send</fl>
+</form>
+<cl></cl>
+</div>
+
+
+<div xTemplate='cats'>
+<fl>Categories:</fl>
+<cl></cl>
+<div xWatch=cats>
+<fl xLoop=cats xKey=k xVal=v>
+  <fl>#v.name</fl>
+  <fl class=btn xCmd='editCategory("#v._id")'>Edit</fl>
+  <fl class=btn xCmd='delCategory("#v._id")'>Delete</fl>
+  <cl></cl>
+</fl>
+<cl></cl>
+<fl class=btn xCmd='newCategory()'>New category</fl>
+<cl></cl>
+</div>
+</div>
+
+<div xTemplate=cated>
+<form id=uploadform5 xCb=sentcategory xForm=uploader.cat method=post action='/plex/cat'>
+<input type=hidden name=_id>
+<fl>Category #uploader.cat._id</fl>
+<cl></cl>
+<fl>Name:</fl>
+<fl><input type=text name=name></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+</form>
+</div>
+
+<div xTemplate='upload'>
+<fl>Filter:</fl>
+<cl></cl>
+<form id=uplfilters>
+<fl>Category:</fl>
+<fl><select onchange='upduplFilters()' name=cat xOptions='allcats,_id,name'></select></fl>
+<cl></cl>
+<fl class=btn xCmd='delallCategory()'>Delete All In Category</fl>
+<cl></cl>
+</form>
+<cl>&nbsp;</cl>
+<cl></cl>
+<fl>Objects:</fl>
+<cl></cl>
+<div xWatch=objects>
+<fl xLoop=objects style='width: 600px' xKey=k xVal=v>
+  <div xTest='"#v.ondisplay" == "true" && "#v.deleted" != "true"'>
+    <fl>#v.name</fl>
+    <fl class=btn xCmd='viewObject("#v._id")'>View</fl>
+    <fl class=btn xCmd='editObject("#v._id")'>Edit</fl>
+    <fl class=btn xCmd='downloadObject("#v._id")'>Download</fl>
+    <fl class=btn xCmd='delObject("#v._id")'>Delete</fl>
+    <cl></cl>
+  </div>
+</fl>
+<cl></cl>
+<cl>&nbsp;</cl>
+<cl></cl>
+<fl class=btn xCmd='newObject()'>New object</fl>
+<cl></cl>
+</div>
+</div>
+
+
+<div xTemplate=objected>
+<form id=uploadform xCb=sentobject xForm=uploader.object method=post action='/plex/object' enctype='multipart/form-data'>
+<input type=hidden name=_id>
+<fl>Object #uploader.object._id</fl>
+<cl></cl>
+<fl>Script: #uploader.object.scriptid</fl>
+<cl></cl>
+<fl>Name:</fl>
+<fl><input type=text name=name></fl>
+<cl></cl>
+<fl>Script:</fl>
+<fl><select name=scriptid xOptions="scripts,_id,name"><option value=''>None</option></select></fl>
+<cl></cl>
+<fl>Tags:</fl>
+<fl><input type=text name=tags></fl>
+<cl></cl>
+<fl>Category:</fl>
+<fl><select name=catid xOptions='cats,_id,name'></select></fl>
+<cl></cl>
+<fl>Data:</fl>
+<fl><input type=file name=data></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+</form>
+</div>
+
+<div xTemplate=objectview>
+<div class=fl id=ov#[._id] xDraw=drawObject style='width: 440px; height: 440px'>
+</div>
+<div class=fl style='width: 180px; max-width: 180px'>
+
+  <div class=cl xCmd="toggleControls('obj_coll')"><fl id=ctrl_obj_coll_arrow>&gt;</fl><fl>Collider</fl><cl></cl></div>
+  <cl></cl>
+  <div id=ctrl_obj_coll xWatch=selectedobj xStyle='display: "#[ctrl.obj_coll.display]"'>
+  <form id=uploadform9 xCb=gotCollider method=post action='/plex/objcoll' enctype='multipart/form-data'>
+    <input type=hidden name=objid value=#[._id]>
+    <fl>Upload:</fl>
+    <fl><input type=file name=coll></fl>
+    <cl></cl>
+    <fl><input value=on id=resetcoords type=checkbox name=resetcoordinates></input></fl>
+    <fl>Use reset coords</fl>
+    <cl></cl>
+    <fl class=formbtn>Submit</fl>
+    <cl></cl>
+  </form>
+  <cl></cl>
+  </div>
+
+  <div class=cl xCmd="toggleControls('obj_break')"><fl id=ctrl_obj_break_arrow>&gt;</fl><fl>Breakable</fl><cl></cl></div>
+  <cl></cl>
+  <div id=ctrl_obj_break xWatch=selectedobj xStyle='display: "#[ctrl.obj_break.display]"'>
+  <form id=uploadform4 xCb=gotBreakable method=post action='/plex/objbreak' enctype='multipart/form-data'>
+    <input type=hidden name=objid value=#[._id]>
+    <fl>Upload:</fl>
+    <fl><input type=file name=break></fl>
+    <cl></cl>
+    <fl class=formbtn>Submit</fl>
+    <cl></cl>
+  </form>
+  <cl></cl>
+  </div>
+
+</div>
+</div>
+
+<div xTemplate=objimporter>
+<fl xWatch=objimport_msg>#[objimport_msg]</fl>
+</div>
+
+
+<div xTemplate=mapimporter>
+<form id=uploadform3 xCb=gotMap method=post action='/plex/importmap' enctype='multipart/form-data'>
+<input type=hidden name=mapid value=#[.mapid]>
+<fl>Category:</fl>
+<fl><select name=catid xOptions='cats,_id,name' onChange='chooseCategory(this)'><option selected value=''>None</option></select></fl>
+<cl></cl>
+<fl>Upload:</fl>
+<fl><input type=file name=data></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+<cl></cl>
+</form>
+<cl></cl>
+<fl xWatch=importer_msg><fl>#[importer_msg]</fl></fl>
+</div>
+
+<div xTemplate=colimporter>
+<form id=uploadform10 xCb=gotCollisionMap method=post action='/plex/importmap' enctype='multipart/form-data'>
+<input type=hidden name=mapid value=#[.mapid]>
+<fl>Upload:</fl>
+<fl><input type=file name=data></fl>
+<cl></cl>
+<fl class=formbtn>Submit</fl>
+<cl></cl>
+</form>
+<cl></cl>
+<fl xWatch=importer_msg><fl>#[importer_msg]</fl></fl>
+</div>
+
+  </templates>
+  <dataforms>
+  </dataforms>
+</body>
+<script language=javascript>
+
+var objects, maps, cats, scripts, scriptnums;
+var objmap;
+
+function helpMe()
+{
+  newWindow("helpwin");
+}
+
+function roundBy(n,by)
+{
+  var m = n/by;
+  m = Math.round(m);
+  return m*by;
+}
+
+function floorBy(n,by)
+{
+  var m = n/by;
+  m = Math.floor(m);
+  return m*by;
+}
+
+function ceilBy(n,by)
+{
+  var m = n/by;
+  m = Math.ceil(m);
+  return m*by;
+}
+
+function toggleControls(lbl)
+{
+  var div = gE("ctrl_" + lbl);
+  var arrow = gE("ctrl_" + lbl + "_arrow");
+
+  if( radVar("ctrl." + lbl + ".display") == "block" ) {
+    radStore("ctrl." + lbl + ".display", "none");
+    div.style.display='none';
+    arrow.innerHTML = '&gt;';
+  } else {
+    radStore("ctrl." + lbl + ".display", "block");
+    div.style.display='block';
+    arrow.innerHTML = 'V';
+    radLoadDiv(div);
+  }
+}
+
+function changeCamera()
+{
+  var useortho = document.forms['ctrlcamera'].orthocam.checked;
+
+  window.useCamera(useortho);
+}
+
+function changeGrid()
+{
+  console.log("changeGrid");
+  var usegrid = document.forms['ctrlgrid'].usegrid.checked;
+
+  if( !usegrid ) {
+    //! Clear grid object if found
+    window.clearGrid();
+    return;
+  }
+
+  var unitsize = document.forms['ctrlgrid'].unitsize.value;
+  var gridsize = document.forms['ctrlgrid'].gridsize.value;
+
+  window.addGrid(unitsize,gridsize);
+}
+
+</script>
+
+<script language=javascript src='https://threejs.org/build/three.js'></script>
+<script language=javascript src='/js/plex/SPE.js'></script>
+<script language=javascript type=module src='/js/plex/mapctrl.js'></script>
+<script language=javascript type=module src='/js/plex/objctrl.js'></script>
+<script language=javascript type=module src='/js/plex/gamectrl.js'></script>
+<script language=javascript type=module src='/js/plex/GltfImport.js'></script>
+<script language=javascript type=module src='/js/plex/GltfCollider.js'></script>
+<script language=javascript type=module src='/js/plex/ColliderImport.js'></script>
+
+<!--<script src='/js/cannon.js'></script>-->
+<script src='/js/ammo.js'></script>
+
+<script language=javascript src='/js/plex/maped.js'></script>
+<script language=javascript src='/js/plex/objed.js'></script>
+<script language=javascript src='/js/plex/scripted.js'></script>
+<script language=javascript>
+
+function logout()
+{
+  disposeWindowManager();
+  blitzTemplate(gE("mainscroll"), "logout");
+}
+
+function login_signin()
+{
+  blitzTemplate(gE("mainscroll"), "signin");
+}
+function login_signup()
+{
+  blitzTemplate(gE("mainscroll"), "signup");
+}
+
+var basicMenu = [];
+
+function castSpell() {
+  var f = document.forms['caster'];
+  var e = gE("zenbox");
+  e.innerHTML = eval(f.spell.value);
+  return false;
+}
+
+var ammo_running=false;
+
+function initSkeleton() {
+  // Initialize any variables here radStore("x", 42);
+  console.log("Setup()");
+
+  radStore("ctrl", {
+    'tools': { display: 'none' },
+    'object': { display: 'none' },
+    'map': { display: 'none' },
+    'grid': { display: 'none' },
+    'camera': { display: 'none' }
+  });
+
+  onAuthenticate(spiritLoggedIn);
+  socketRegister('registered', spiritSockedIn);
+
+  radLoad();
+  useMongoSocket();
+  openSocket(window.location.host, chatSocket);
+  radHook("pagekey", pgChanged);
+
+  Ammo().then(function(){
+    console.log("Ammo started");
+    ammo_running=true;
+    renderHomePage();
+  });
+}
+
+function pgChanged() {
+  alert("Login changed");
+  spiritLoggedIn();
+}
+
+function spiritSockedIn() {
+  var login = radVar("sess.login");
+  if( login != 1 ) {
+    console.log("spirit.SockedIn.go");
+  } else {
+    //radStore("user", radVar("sess.user"));
+    spiritLoggedIn();
+  }
+}
+var loggedin=false;
+function spiritLoggedIn() {
+  if( !loggedin ) {
+    loggedin=true;
+    console.log("spirit.LoggedIn.go");
+    RadRequest("/plex/user", {}, gotUserdata);
+  }
+}
+
+function renderHomePage() {
+  var login = radVar("sess.login");
+  if( login != 1 ) {
+    blitzTemplate(gE("mainscroll"), "login");
+  } else {
+    blitzTemplate(gE("mainscroll"), "home");
+  }
+}
+
+function chatSocket(event) {
+  var i,j,id,pid,sid,cid,cno,sno;
+  var isnew;
+  console.log("Socket event");
+  var data = JSON.parse(event.data);
+  var docs;
+  console.log("Socket data: ", data);
+  if( !('t' in data) )
+    return;
+  docs = data['docs'];
+  if( typeof docs == 'undefined' ) {
+    docs = [ data['doc'] ];
+    docs[0]['_id'] = data['id'];
+  }
+  switch( data['t'] ) {
+    default:
+      console.log("[table-" + data['t'] + "]");
+      break;
+  }
+}
+
+function gotUserdata(details) {
+  var o = JSON.parse(details),
+    cu = o.data;
+  if (cu && typeof cu != 'undefined') {
+    console.log("gotSpiritData");
+  } else {
+    console.log("Not logged in yet");
+    return;
+  }
+
+  console.log("Details ", cu);
+  objects = cu.objects;
+  objmap = {};
+  var i;
+  for( i=0; i<objects.length; ++i ) {
+    objects[i].ondisplay=true;
+    objmap[ objects[i]._id ] = i;
+  }
+  var allcats;
+  radStore("objects", objects);
+  radStore("objmap", objmap);
+  updmapFilters();
+  maps = cu.maps;
+  radStore("maps", maps);
+  cats = cu.cats;
+  radStore("cats", cats);
+  allcats = [{_id: 'all', name: 'All'},{_id: 'none', name: 'None'},...cats];
+  radStore("allcats", allcats);
+  console.log("allcats",allcats);
+  scripts = cu.scripts;
+  scriptnums = {};
+  for( i=0; i<scripts.length; ++i ) {
+    scriptnums[ scripts[i]._id ] = i;
+  }
+  radStore("scripts", scripts);
+  radStore("scriptnums", scriptnums);
+  renderHomePage();
+}
+
+registerStartup(initSkeleton);
+
+</script>

@@ -1,0 +1,137 @@
+<div xWatch=sess.userid>
+<div xTest='Boolean("#sess.userid") && "#sess.userid" != "-1"'>
+<div xDataname='subscript' xUrl='https://spiritshare.org/push/key.json'></div>
+</div>
+</div>
+<script language=javascript>
+function updatePushSubscription( )
+{
+  var pushkeys = radVar("subscript");
+  console.log("Update web-push(" + pushkeys + ")");
+  if( pushkeys == null || !pushkeys || !('appkey' in pushkeys) ) {
+    //console.log("Couldn't find the appkey for push system.");
+    return;
+  }
+  push_Start( pushkeys.appkey );
+}
+radHook( 'subscript', updatePushSubscription );
+
+var pushConfig = false;
+var push_as_key = false;
+var push_er = false;
+
+if( ('serviceWorker' in navigator) ) {
+  pushConfig = { 'type': 'sw' };
+} else if ( ('PushManager' in window) ) {
+  pushConfig = { 'type': 'pm' };
+}
+
+function str2bin( str )
+{
+  return new Uint8Array(str.split("").map(x=>x.charCodeAt(0)));
+}
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/')
+  ;
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
+function push_End()
+{
+console.log("Unsubscribing push...");
+	var sw = navigator.serviceWorker.register('/js/pushWorker.js');
+	sw.catch( (err) => {
+		console.log("Couldn't register service worker pushWorker.js");
+		return;
+	});
+	sw.then( (registration) => {
+		push_er = registration;
+		console.log("Test result: ", registration);
+
+		push_er.pushManager.getSubscription().then( (sub) => {
+      console.log("Subscription: ", sub);
+      sub.unsubscribe().then( () => {
+        console.log("Unsubscribed");
+      });
+    });
+  });
+}
+function push_Start( pkey )
+{
+	if( pushConfig == false )
+		return false;
+
+	console.log("Running push_Start (config=)", pushConfig);
+
+  console.log("Pkey was " + pkey);
+  push_as_key = urlBase64ToUint8Array( pkey ); //urlBase64ToUint8Array
+
+	var sw = navigator.serviceWorker.register('/js/pushWorker.js');
+	sw.catch( (err) => {
+		console.log("Couldn't register service worker pushWorker.js");
+		return;
+	});
+	sw.then( (registration) => {
+		push_er = registration;
+		console.log("Test result: ", registration);
+
+		var sub = push_er.pushManager.getSubscription();
+		sub.then( (subscription) => {
+
+			if( subscription ) {
+        var realsub = subscription.toJSON(); // I don't know what the obsession with weird objects is
+				radStore("push.sub", realsub);
+				console.log("Found your subscription.", realsub);
+        RadPost( '/push/save.json', {"endpoint": subscription.endpoint, 'auth': realsub.keys.auth, 'p256dh': realsub.keys.p256dh}, sentSubscription );
+				return;
+			}
+
+			var sub2 = push_requestSub();
+			console.log("Requesting permissions.");
+
+			sub2.then( (subscription2) => {
+				console.log("Got permissions: " + subscription2);
+
+				var sub3 = push_retrieveSub();
+
+				sub3.then( (subcode) => {
+					console.log("Acquired permission code: ", subcode);
+
+				});
+				sub3.catch( (err) => {
+					console.log("Acquisition error: " + err);
+				});
+
+			})
+		});
+	});
+}
+function sentSubscription()
+{
+  console.log("Subscription sent to server.");
+}
+
+function push_requestSub() {
+	var req = new Promise( (res, rej) => {
+		const perm = Notification.requestPermission( (result) => {
+			res(result);
+		});
+		if( perm )
+			perm.then(res,rej);
+	});
+	req.then( (permRes) => {
+		if( permRes != 'granted' ) {
+			radStore("push_error", "No permission: " + permRes);
+		}
+	});
+	return req;
+}
+
+function push_retrieveSub() {
+	return push_er.pushManager.subscribe( { userVisibleOnly: true, applicationServerKey: push_as_key } );
+}
+
+</script>

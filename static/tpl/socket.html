@@ -1,0 +1,200 @@
+<script language=javascript>
+  var wsSock;
+  var socket_timer = -1;
+  var keypath = "pckey";
+  var readypath = "ready";
+  var closing_socket = false;
+  var socketRecv = null;
+  var socket_dubeg = false;
+  var use_mongo = false;
+
+  //openSocket: open the socket connection to the database server
+  function useMongoSocket() {
+    use_mongo = true;
+  }
+  function openSocket(target_url, recvCb, use_secure = false, _keypath = null, _readypath = null) {
+    if (socket_timer != -1) {
+      clearInterval(socket_timer);
+      socket_timer = -1;
+    }
+    if (use_secure || document.URL.startsWith("https")) {
+      targetHost = "wss://" + target_url + ":443/";
+    } else {
+      targetHost = "ws://" + target_url + "/";
+    }
+    if (socket_dubeg)
+      console.log("TargetHost set to", targetHost);
+    socketRecv = recvCb;
+    if (_keypath != null)
+      keypath = _keypath;
+    if (_readypath != null)
+      readypath = _readypath;
+    connectSocket();
+  }
+
+  // socketOpen: receive opened socket event
+  function socketOpen(event) {
+    if (socket_timer != -1) {
+      clearInterval(socket_timer);
+      socket_timer = -1;
+    }
+    if (socket_dubeg)
+      console.log("Socket open", event);
+
+    configSocket();
+  }
+
+  // socketRegister: callback registry, events by eventType
+  var socketRegistry = {};
+
+  function socketRegister(eventType, cb, cbdata) {
+    if (!(eventType in socketRegistry)) {
+      socketRegistry[eventType] = [];
+    }
+    socketRegistry[eventType].push([cb, cbdata]);
+    if (socket_dubeg)
+      console.info(eventType + " registered");
+  }
+
+  // socketRegisterFree: release registry for event eventType
+  function socketRegisterFree(eventType, cb, cbdata) {
+    if (!(eventType in socketRegistry)) return;
+    var i, l = socketRegistry[eventType];
+    for (i = 0; i < l.length; i++) {
+      if (l[i][0] === cb && (cbdata == null || l[i][1] === cbdata)) {
+        l.splice(i, 1);
+        i--;
+      }
+    }
+  }
+  // socketRecieve: handle socket data events via socketRegistry
+  var confirmed = {};
+
+  function socketRecieve(event) {
+    if (socket_timer != -1) {
+      clearInterval(socket_timer);
+      socket_timer = -1;
+    }
+    var obj = event.obj = JSON.parse(event.data);
+    var passthru = false,
+      found = false;
+    if (socket_dubeg)
+      console.log("socketRecv: " + obj.code);
+
+    if (obj.code == 'registered') {
+      /*        if( auth_set_pagekey ) { // requires auth.html
+                  auth_set_pagekey( obj.cookie );
+              }*/
+      radStore("sess", obj.sess);
+      passthru = true;
+    } else if (obj.code == 'granted') {
+      console.info("Oauth authorized.");
+      radStore(readypath, 2);
+      passthru = true;
+    }
+
+    if (typeof obj.confirm != 'undefined') {
+      RadRequest('/sconfirm.js', 'c=' + obj.confirm, false, 'POST');
+      if (obj.confirm in confirmed) {
+        // we already received this message!
+        console.log("Message duplicate (" + obj.confirm + ")");
+        return;
+      }
+      var i, lt = new Date().getTime();
+      confirmed[obj.confirm] = lt;
+      lt = lt - 60; // 60 seconds old messages shouldn't be left in 'confirmed'
+      var pullers = [];
+      for (i in confirmed) {
+        if (confirmed[i] < lt) {
+          pullers.push(i);
+        }
+      }
+      for (i = 0; i < pullers.length; i++) {
+        delete confirmed[i];
+      }
+    }
+
+    if (typeof socketRecv == 'function') {
+      socketRecv(event);
+    }
+
+    if (obj.code in socketRegistry) {
+      for (var i = 0; i < socketRegistry[obj.code].length; ++i) {
+        var oc = socketRegistry[obj.code][i];
+        found = true;
+        if (oc[0](event, obj.code, oc[1], obj) === false) {
+          if (!passthru)
+            break;
+        }
+      }
+    }
+    if (!found && !passthru && typeof socketRecv != 'function') {
+      console.warn("Unhooked socket event: ", event);
+    }
+  }
+
+  // socketClose: socket was closed
+  function socketClose(event) {
+    console.warn("Socket closed, trying to reopen.");
+    if (socket_timer == -1) {
+      socket_timer = setInterval("testSocket()", 1000);
+    }
+    wsSock = null;
+  }
+
+  // socketError: socket was errored closed
+  function socketError(event) {
+    console.warn("Socket error, trying to reopen.", event);
+    if (socket_timer == -1) {
+      socket_timer = setInterval("testSocket()", 1000);
+    }
+    wsSock = null;
+  }
+
+  // configSocket: Prepare for connection by getting any session key
+  function configSocket() {
+    var ix = radVar("pckey");
+    if (ix == null) {
+      radHook(keypath, configSocket, null);
+    } else {
+      radUnhook(keypath, configSocket, null);
+      sendSocket({
+        'code': use_mongo ? 'reg98' : 'reg99',
+        'pckey': ix,
+        'pagekey': radVar("pagekey")
+      });
+    }
+  }
+  function testSocket() {
+    if (wsSock == null) {
+      clearTimeout(socket_timer);
+      socket_timer = -1;
+      connectSocket();
+    } else {
+      console.log("Waiting for socket to close.");
+    }
+  }
+
+  function connectSocket() {
+    if (socket_dubeg)
+      console.info("connectSocket()");
+    if (wsSock != null) {
+      closing_socket = true;
+      wsSock.close();
+      closing_socket = false;
+    }
+    wsSock = new WebSocket(targetHost, 'echo-protocol');
+    wsSock.onmessage = socketRecieve;
+    wsSock.onclose = socketClose;
+    wsSock.onerror = socketError;
+    wsSock.onopen = socketOpen;
+    // wsSock auto-connects once defined, so we don't have to call a wsSock.connect method
+  }
+
+  function sendSocket(obj) {
+    if (typeof obj == 'string')
+      wsSock.send(obj);
+    else
+      wsSock.send(JSON.stringify(obj));
+  }
+</script>

@@ -1,0 +1,180 @@
+<templates>
+
+<div xTemplate='userprofile'>
+<div xWatch=sess,pagekey,pckey,user>
+<fl>Browser key: #pckey</fl>
+<cl>&nbsp;</cl>
+<fl>Session key: #pagekey</fl>
+<cl></cl>
+<fl>Permissions:</fl>
+<fl xLoop=sess.permissions xKey=k xVal=v>
+<fl>#v&nbsp;</fl>
+</fl>
+<cl></cl>
+<fl>Username: #user.name</fl>
+<cl></cl>
+</div>
+</div>
+
+<div xTemplate='signup'>
+<form xCb=auth_signup method=post action='/msignup' xForm='newuser' #titlewidth=100 #valuewidth=200>
+<input xWatch2=sess type=hidden name=cookie value='#sess.key'>
+<field #name=username #title=Username></field> <br/>
+<field #name=password #title=Password></field> <br/>
+<field #name=email #title=Email></field>
+<cl></cl>
+<submit>Signup</submit>
+</form>
+</div>
+
+<div xTemplate='signin'>
+<form xCb=auth_signin method=post action='/msignin' xForm='userexist' #titlewidth=100 #valuewidth=200>
+<input xWatch2=cookie type=hidden name=cookie value='#sess.pagekey'>
+<cl>Cookie #sess.pagekey</cl>
+<field #name=username #title=Username></field>
+<field #name=password #title=Password></field>
+<cl><submit>Signin</submit></cl>
+</form>
+</div>
+
+<div xTemplate='verify'>
+<form xCb=auth_verify method=post action='/mverify' xForm='userverify' #titlewidth=100 #valuewidth=200>
+<input xWatch2=sess type=hidden name=cookie value='#sess.key'>
+<field #name=username #title=Username></field>
+<field #name=code #title=Code></field>
+<cl></cl>
+<submit>Verify</submit>
+</form>
+</div>
+
+<div xTemplate='logout'>
+<form xCb=auth_logout method=post action='/mlogout' xForm='userexits' #titlewidth=100 #valuewidth=200>
+<input xWatch2=sess type=hidden name=cookie value='#sess.key'>
+<cl><submit>Logout</submit></cl>
+</form>
+</div>
+
+</templates>
+
+
+<script language=javascript>
+
+/*
+var auth_radicle = {
+};
+
+function authStartup()
+{
+    radClass(auth_radicle);
+
+}
+registerStartup(authStartup);
+*/
+function gotBackdoor(data) {
+    var dobj = JSON.parse(data);
+    console.log("gotBackdoor(", dobj, ")");
+}
+function auth_signup(data) {
+	var dobj = JSON.parse(data);
+	if( dobj.status == 'ok' ) {
+		console.log("Signup successful. Logged in.");
+		radStore("sess", dobj.sess);
+		radStore("user", dobj.user);
+    radChange("pagekey");
+	} else {
+		console.log("Signup", dobj.status);
+		alert(dobj.status);
+	}
+}
+function auth_signin(data) {
+	var dobj = JSON.parse(data);
+	if( dobj.status == 'ok' ) {
+		console.log("Login successful.");
+		radStore("sess", dobj.sess);
+		radStore("user", dobj.user);
+    radChange("pagekey");
+	} else {
+		console.log("Login", dobj.status);
+		alert(dobj.status);
+	}
+}
+function auth_verify(data) {
+	var dobj = JSON.parse(data);
+	if( dobj.status == 'ok' ) {
+		console.log("User account has been verified.");
+	} else {
+		console.log("Verify", dobj.status);
+		alert(dobj.status);
+	}
+}
+function auth_logout(data) {
+	var dobj = JSON.parse(data);
+	if( dobj.status == 'ok' ) {
+		console.log("Logged out.");
+    radChange("pagekey");
+	} else {
+		console.log("Logout", dobj.status);
+		alert(dobj.status);
+	}
+}
+
+//function prepare_session() {
+//	console.log("Registering authorized session startup with socket");
+//}
+function auth_set_pckey( cookieval ) // pckey: 32 bytes
+{
+    console.log("set_pckey", cookieval);
+    if( typeof cookieval == 'undefined' || cookieval == 'undefined' || cookieval == null ) {
+        console.error("cookieval1", cookieval);
+        return;
+    }
+    radCStore("pckey", cookieval);
+    if( typeof(Storage) !== 'undefined' ) {
+      localStorage.cookie = cookieval;
+    }
+    createCookie("pckey", cookieval);
+}
+function auth_set_pagekey( cookieval ) // additional 8 bytes of random string to track tabs and windows.
+{
+//    console.log("set_pagekey", cookieval);
+    if( typeof cookieval == 'undefined' || cookieval == 'undefined' || cookieval == null ) {
+      console.error("cookieval2", cookieval);
+      return;
+    }
+    radCStore("pagekey", cookieval);
+    createCookie("pagekey", cookieval);
+}
+
+function load_authorization()
+{
+	var scook=false, pcook=false;
+
+  if( typeof(Storage) !== "undefined" ) {
+    if( 'cookie' in localStorage  )
+      scook = localStorage.cookie;
+  }
+
+  if( !scook )
+    scook = readCookie("pckey");
+
+  pcook = readCookie("pagekey");
+
+	if ( !scook || scook == 'undefined' || !pcook || pcook == 'undefined' ) {
+    alert("Your browser has cached this page and disabled its cookies. Please reload the page to get it to work.");
+    return;
+	}
+
+  auth_set_pckey(scook);
+	auth_set_pagekey(pcook);
+}
+
+function getSession(obj,req) {
+    console.log("getSession:",obj);
+    radStore("sess", obj.sess);
+    radStore("user", obj.user);
+}
+
+registerStartup( load_authorization );
+
+
+</script>

@@ -1,0 +1,909 @@
+<templates>
+
+<div xTemplate="alertbar">
+
+<cl>Here's something...</cl>
+<cl></cl>
+
+<div id=alert_popup_scroll>
+
+</div>
+
+
+<cl></cl>
+<cl>Did you catch that?</cl>
+<btn onClick='pop_alerts_down()'>close</btn>
+
+</div>
+
+<div xTemplate='loadwheel'>
+<div class=_loadwheel xWatch=loadrate xStyle='background-color: "#loadcolor"; opacity: 1.0-#loadrate'>&nbsp;</div>
+</div>
+
+</templates>
+
+<script language=javascript>
+
+var back_radicle = {
+    'loadwheel': { 'xCast': 'loadwheel', 'id': 'loadwheel' },
+    'alertbar': { 'style': 'bottom: 10px; margin: 0px auto; padding: 30px 30px 10px 10px' }
+};
+
+function backStartup()
+{
+    radStore("loadrate", "0.0");
+    radStore("loadcolor", "green");
+    radClass(back_radicle);
+}
+registerStartup(backStartup);
+
+
+function buildArgString(obj, nx)
+{
+    var i,args="",subargs;
+
+    if( typeof nx == 'undefined' ) nx = "";
+
+    for( i in obj ) {
+        if( typeof obj[i] != 'object' ) {
+            if( args != "" ) args += "&";
+            if( nx != "" ) args += encodeURIComponent( nx + "." + i );
+            else args += encodeURIComponent( i );
+            args += "=" + encodeURIComponent( obj[i] );
+        } else {
+            if( nx != "" ) subargs = buildArgString( obj[i], nx + "." + i );
+            else subargs = buildArgString(obj[i], i);
+            if( args != "" && subargs != "" ) args += "&" + subargs;
+            else if( subargs != "" ) args = subargs;
+        }
+    }
+    return args;
+}
+
+function encode_utf8(s){
+  return unescape(encodeURIComponent(s));
+}
+
+function buildArgsForm(files, obj)
+{
+  var data = "";
+
+  var boundary = "blob3232";
+
+  for( var i in obj ) {
+    data += "--blob3232";
+    data += "content-disposition: form-data; name=\"" + encode_utf8(i) + "\"\r\n\r\n";
+    data += encode_utf8(obj[i]) + "\r\n";
+  }
+  for( var i in files ) {
+    data += "--blob3232\r\n";
+    data += "content-disposition: form-data; name=\"" + encode_utf8(i) + "\"; filename=\"data\"\r\n";
+    data += "Content-Type: application/octet-stream\r\n\r\n";
+    data += files[i];
+    data += "\r\n";
+  }
+  data += "--blob3232--\r\n";
+  return data;
+};
+
+function HtmlRequestEncode(url,parms,files,callback,extraparm)
+{
+    if( typeof callback == 'undefined' || callback == null ) callback=false;
+    if( typeof callback == 'string' ) {
+        var offx,cbshort;
+        if( (offx=callback.indexOf("(")) != -1 ) {
+            cbshort = callback.substring(0,offx);
+        } else {
+            cbshort = callback;
+        }
+        callback = eval(cbshort);
+    }
+    if( typeof extraparm == 'undefined' ) extraparm="";
+    var i = myhtmlrequest.length;
+//  alert("length: " + i + ": " + url);
+    var data = buildArgsForm(files,parms);
+    z = new XMLHttpRequest();
+    z.mystoredurl = url;
+    z.onreadystatechange = HtmlCallback;
+    z.open('POST', url, true);
+    z.setRequestHeader( 'Content-Type', 'multipart/form-data; boundary=blob3232' );
+    z.alreadyread=false;
+    z.resourceid = loadWheel();
+    try {
+        z.send(data);
+        myhtmlcallback[i] = callback;
+        myhtmlparm[i] = extraparm;
+        myhtmlrequest[i] = z;
+    } catch( e ) {
+        console.log(e);
+    }
+}
+
+function blobify(byteCharacters, contentType, sliceSize)
+{
+  contentType = contentType || '';
+  sliceSize = sliceSize || 512;
+
+  var byteArrays = [];
+
+  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    var byteNumbers = new Array(slice.length);
+    for (var i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    var byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  var blob = new Blob(byteArrays, {type: contentType});
+  return blob;
+}
+function HtmlRequestEncode2(url,parms,files,callback,extraparm)
+{
+    if( typeof callback == 'undefined' || callback == null ) callback=false;
+    if( typeof callback == 'string' ) {
+        var offx,cbshort;
+        if( (offx=callback.indexOf("(")) != -1 ) {
+            cbshort = callback.substring(0,offx);
+        } else {
+            cbshort = callback;
+        }
+        callback = eval(cbshort);
+    }
+    if( typeof extraparm == 'undefined' ) extraparm="";
+    var i = myhtmlrequest.length;
+    var formData = new FormData();
+    var j;
+
+    for( j in parms ) {
+      formData.append(j,parms[j]);
+    }
+    for( j in files ) {
+      formData.append(j,blobify(files[j],'image/png'));
+    }
+
+    z = new XMLHttpRequest();
+    z.mystoredurl = url;
+    z.onreadystatechange = HtmlCallback;
+    z.open('POST', url, true);
+//    z.setRequestHeader( 'Content-Type', 'multipart/form-data; boundary=blob3232' );
+    z.alreadyread=false;
+    z.resourceid = loadWheel();
+    try {
+        z.send(formData);
+        myhtmlcallback[i] = callback;
+        myhtmlparm[i] = extraparm;
+        myhtmlrequest[i] = z;
+    } catch( e ) {
+        console.log(e);
+    }
+}
+
+
+function goTo(page)
+{
+    document.location.href=page;
+}
+function goToNew(page)
+{
+    window.open(page,'_blank');
+}
+
+
+var running_polls = {};
+function runPoll( id )
+{
+    var poll = running_polls[id];
+
+    HtmlRequest(poll['uri'], '', poll['cb'], poll['data']);
+}
+function clearPoll( id )
+{
+    clearInterval( running_polls[id].timehandler );
+    delete running_polls[id];
+}
+function clearPolls( url )
+{
+    var i;
+    var rkeys = [];
+    for( i in running_polls ) {
+        rkeys.push(i);
+    }
+    for( j=0; j<rkeys.length; j++ ) {
+        i = rkeys[j];
+        if( running_polls[i].query == url ) {
+            clearInterval( running_polls[i].timehandler );
+            delete running_polls[i];
+        }
+    }
+}
+function startPoll( url, refresh_seconds, handler, data )
+{
+    var r=randStr(5);
+    var poll = { 'uri': url, 'cb': handler, 'id': r, 'data': data };
+    poll.timehandler = setInterval( 'runPoll("' + r + '")', refresh_seconds * 1000 );
+    running_polls[r] = poll;
+
+    runPoll(r);
+    return r;
+}
+
+var vsts = new Array();
+function getFreeVst()
+{
+    var vstd = cDivCl("");
+    var i = vsts.length;
+    vsts[i] = vstd;
+    vstd.resourceid = loadWheel();
+    var zb = gE('zenbox');
+    vstd.innerHTML = "<iframe name=vst"+i+" id=vst"+i+" onload='VstLoaded("+i+")' src='about:blank'></iframe>";
+    zb.appendChild( vstd );
+    return i;
+}
+function getVst(addr)
+{
+    var vstd = cDivCl("");
+    var i = vsts.length;
+    vsts[i] = vstd;
+    vstd.resourceid = loadWheel();
+
+    var zb = gE('zenbox');
+    vstd.innerHTML = "<iframe onload='VstLoaded("+i+")' src=\"" + quoteesc(addr) + "\"></iframe>";
+//  console.log(vstd.innerHTML);
+    zb.appendChild( vstd );
+    return i;
+}
+function getVstScript(addr)
+{
+//  var vstd = cDivCl("");
+    var i = vsts.length;
+
+    var xo = cE("script");
+    xo.setAttribute('onload', 'VstLoaded(' + i + ')');
+    xo.src = addr;
+
+    vsts[i] = xo;//vstd;
+    xo.resourceid = loadWheel();
+
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(xo);
+//  document.
+
+//  var zb = gE('zenbox');
+//  vstd.innerHTML = "<script language=javascript onload='VstLoaded("+i+")' src=\"" + quoteesc(addr) + "\"></         script>";
+//  console.log(vstd.innerHTML);
+//  zb.appendChild( vstd );
+    return i;
+}
+
+function VstObject( tgt, obj, cb )
+{
+    var v = getFreeVst();
+    var args=buildArgString(obj);
+    VstRequest(tgt,args,cb);
+}
+function VstForm( frm, cb )
+{
+    var i = getFreeVst();
+    frm.target = "vst" + i;
+    vsts[i].cbfunc = cb;
+    frm.submit();
+}
+function VstScript( tgt, args, cb )
+{
+    if( args != "" ) args = "?" + args;
+    var i = getVstScript(tgt+args);
+    var vst = vsts[i];
+    vst.cbfunc = cb;
+}
+function VstRequest( tgt, args, cb )
+{
+    if( args != "" ) args = "?" + args;
+    var i = getVst(tgt+args);
+    var vst = vsts[i];
+    vst.cbfunc = cb;
+}
+function VstLoaded( n )
+{
+    if( vsts[n] && vsts[n].cbfunc != undefined && vsts[n].cbfunc !== false ) {
+        loadWheel_fin( vsts[n].resourceid );
+        vsts[n].cbfunc( vsts[n].innerHTML, vsts[n] );
+    }
+}
+function HtmlObjRequest( tgt, obj, cb )
+{
+    var args=buildArgString(obj);
+    HtmlRequest(tgt, args, cb);
+}
+function HtmlFormRequest( tgt, frm, cb )
+{
+    var i,args="";
+
+    if( frm.enctype == 'multipart/form-data' ) {
+    	// try to read files
+    	args = new FormData(frm);
+    } else {
+	    for( i in frm.elements ) {
+	        if( frm.elements[i].type != 'button' ) {
+	            if( args != "" ) args += "&";
+	            args += encodeURIComponent(frm.elements[i].name) + "=" + encodeURIComponent(frm.elements[i].value);
+	        }
+	    }
+    }
+    HtmlRequest(tgt, args, cb);
+}
+
+function VstPost_formArray( obj, nx )
+{
+    var str = "";
+    var i;
+
+    if( typeof obj != 'object' ) {
+        return "<input type=hidden name='" + nx + "' value='" + squoteesc(obj) + "'>\n";
+    }
+    if( typeof obj.length == 'undefined' ) {
+        for( i in obj ) {
+            str += VstPost_formArray( obj[i], nx + "[" + i + "]" );
+        }
+    } else {
+        for( i=0; i<obj.length; i++ ) {
+            str += VstPost_formArray( obj[i], nx + "[" + i + "]" );
+        }
+    }
+}
+function VstPost( tgt, obj )
+{
+    var v = getFreeVst();
+    var fx = cE("form");
+    fx.method = "POST";
+    fx.action = tgt;
+    fx.id = fx.name = fx.target = "vst" + v;
+    var i, e, j;
+//  var doc = cE("div");
+    var ds="";
+
+    for( i in obj ) {
+        if( typeof obj[i] == 'undefined' ) continue;
+        ds += VstPost_formArray(obj[i], i);
+    }
+    e = cE("div");
+    e.innerHTML = ds;
+    aC(fx,e);
+    aC(gE('zenbox'), fx);
+    fx.submit();
+}
+
+
+var myhtmlrequest = [];
+var myhtmlcallback = [];
+var myhtmlparm = [];
+
+var addEvent = function(elem, type, eventHandle) {
+    if (elem == null || elem == undefined) return;
+    if ( elem.addEventListener ) {
+        elem.addEventListener( type, eventHandle, false );
+    } else if ( elem.attachEvent ) {
+        elem.attachEvent( "on" + type, eventHandle );
+    }
+};
+
+
+var cmdRequests = {};
+var cmd_type_handlers = {};
+var cmd_handlers = {}, cmd_accept = {}, cmd_reject = {};
+var cmd_urls = {}, cmd_method = {};
+var cmd_config = {};
+function cmdRegister( code, url, handler, yesHandler, noHandler, cmdMethod='GET' )
+{
+	if( typeof noHandler == 'undefined' ) {
+		noHandler = yesHandler;
+		yesHandler = null;
+	}
+
+	cmd_urls[code] = url;
+	cmd_handlers[code] = handler;
+
+	if( typeof yesHandler != 'undefined' && yesHandler != null )
+		cmd_accept[code] = yesHandler;
+	if( typeof noHandler != 'undefined' && noHandler != null )
+		cmd_reject[code] = noHandler;
+	if( typeof cmdMethod != 'undefined' && cmdMethod != null )
+		cmd_method[code] = cmdMethod;
+}
+function cmdRegisterType( type, handler )
+{
+	cmd_type_handlers[type] = handler;
+}
+
+function cmdConfigure( code, socketHandler, socketCfg )
+{
+	cmd_config[code] = { 'sockH': socketHandler, 'sock': socketCfg };
+}
+
+
+function radAutoSocket( ev )
+{
+	var obj = ev.obj;
+	var code = obj.code;
+
+  //console.log("ras", ev);
+
+	if( code in cmd_handlers ) {
+		var run_direct=true, run_auto=false;
+		if( code in cmd_config ) {
+			run_direct = ( cmd_config[code]['sock'] == 'direct' );
+			run_auto = ( cmd_config[code]['sock'] == 'auto' );
+		}
+		if( run_direct )
+			cmd_handlers[cmd]( obj );
+		else {
+			var event = ev;
+			var h = cmd_config[code]['sockH'];
+			var s = cmd_config[code]['sock'];
+			if( typeof h != 'undefined' && h != null ) {
+				h( eval( s ) );
+			} else {
+				cmd_handlers[cmd]( eval( s ) );
+			}
+		}
+	}
+
+  //console.log("autoSocket: " + typeof obj.data + ": ", obj);
+  var istyped;
+  if( 'label' in obj && obj.label ) {
+    obj.data = eval( "var a=" + obj.data + "; a;" );
+    istyped=true;
+  } else istyped=false;
+
+  if( istyped || typeof obj.data == 'object' ) {
+    if( obj.data.type in cmd_type_handlers ) {
+      cmd_type_handlers[ obj.data.type ]( obj.data, obj );
+    } else if( 'default' in cmd_type_handlers ) {
+      cmd_type_handlers.default(obj.data,obj);
+    } else {
+      console.info("no handler", obj);
+    }
+    return;
+  }
+	var msg = obj.data.split("\n");
+	var cmd = msg.shift();
+	if( cmd in cmd_handlers ) {
+		cmd_handlers[ cmd ]( msg );
+	} else if( 'type' in obj ) {
+		console.info(cmd, msg);
+	}
+}
+
+function radiantCmd( url, params, cmdHand, cmdYes, cmdNo, cmdMethod='GET' )
+{
+	// like radCommand, but everything splled out there instead of registered. we faux-register.
+	var codeFaux = randStr(8);
+    cmdRegister( codeFaux, url, cmdHand, cmdYes, cmdNo, cmdMethod );
+	radCommand(codeFaux, params);
+}
+
+function radCommand( cmd, params )
+{
+	var asp = randStr(8);
+	if( cmd in cmd_urls ) {
+		cmdRequests[asp] = [ cmd, setTimeout( "radCommandLost('" + asp + "')", 5000 ) ];
+		RadRequest( cmd_urls[cmd], params, radCommandConfirm, cmd_method[cmd], asp );
+	} else {
+		console.log("Cannot '" + cmd + "': Unknown radiant command.");
+	}
+}
+
+function radCommandLost( asp )
+{
+	var cmd = cmdRequests[asp][0];
+	if( cmd in cmd_reject )
+		cmd_reject[ cmd ]();
+}
+
+function radCommandConfirm( data, parm, reqdata )
+{
+	var cmdr = cmdRequests[parm];
+	var cmd = cmdr[0];
+	clearTimeout( cmdr[1] );
+	if( cmd in cmd_accept )
+		cmd_accept[ cmd ]( data );
+}
+
+
+function RadPost( url, parms, callback, ep='' )
+{
+	RadRequest(url,parms,callback,'POST',ep);
+}
+
+function RadRequest( url, parms, callback, usemethod='GET', ep='' )
+{
+  /*
+    var cook, ukey = radVar("pagekey");
+    if( ukey && ukey != null ) {
+        //console.log("RR: use pagekey");
+        cook = ukey;
+    } else {
+        //console.log("RR: use pagekey")
+        cook = radVar("cookie");
+    }
+    // FIXME: We should use a different parameter for the pagekey (like pk instead)
+	if( typeof parms == 'string' ) {
+		parms = parms + "&sk=" + cook;
+	} else {
+		if( typeof parms == 'undefined' || parms === null || parms === false )
+			parms = {};
+		parms['sk'] = cook;
+	}
+*/
+	var params = typeof parms == 'string' ? parms : buildArgString(parms);
+
+	if( usemethod == 'GET' ) {
+		HtmlRequestGet(url,params,callback,ep);
+	} else {
+		HtmlRequest(url,params,callback,ep);
+	}
+}
+
+var postauth2_methods = [];
+var postauth2_timer = 0;
+var auth_login_state = 0;
+var postauth_lastid = null;
+var postauth_lastid2 = null;
+// onAuthenticate will call for every login, logoff, and session relog
+function onAuthenticate( method )
+{
+  postauth2_methods.push(method);
+
+	var j = radVar("sess.userid");
+	if( j && typeof j == 'string' && j != 'undefined' && j != '' && j != '-1' ) {
+    if( postauth_lastid != j ) {
+      postauth_lastid = j;
+      method();
+    }
+	}
+  if( postauth2_timer == 0 ) {
+    postauth2_timer = 1;
+		radHook( "sess.userid", onAuthFinish );
+		radHook( "pagekey", onAuthFinish );
+	}
+}
+function onAuthFinish()
+{
+	var j = radVar("pagekey"), sess = radVar("sess");
+  if( !j || j == null || j == 'undefined' || j == '' ) {
+    if( auth_login_state == 0 ) return;
+    auth_login_state = 0;
+  } else {
+    if( sess == null || typeof sess.userid == 'undefined' ) {
+      if( auth_login_state == 1 ) return;
+      auth_login_state = 1;
+    } else if( sess.userid == -1 ) {
+      if( auth_login_state == 2 ) return;
+      auth_login_state = 2;
+    } else {
+      if( auth_login_state == 3 ) return;
+      auth_login_state = 3;
+    }
+  }
+  j = j + auth_login_state;
+
+  if( postauth_lastid2 != j ) {
+    postauth_lastid2 = j;
+    if( auth_login_state == 3 ) {
+  	   for( var i=0; i<postauth2_methods.length; i++ ) {
+         try {
+  		     postauth2_methods[i]();
+         } catch( e ) {
+           console.log("onAuthFinish", e);
+         }
+       }
+    }
+  }
+}
+
+var postauth_methods = [];
+var postauth_timer = -1;
+
+function waitAuthenticate( method )
+{
+	var j = radVar("sess.userid");
+	if( typeof j == 'string' && j != 'undefined' && j != '' && j != '-1' ) {
+		if( postauth_timer != 0 )
+			waitAuthFinish();
+		return true;
+	} else if( postauth_timer == -1 ) {
+		postauth_methods.push(method);
+		radHook( "sess.userid", waitAuthFinish );
+    radHook( "pagekey", waitAuthFinish );
+		return false;
+	}
+}
+function waitAuthFinish()
+{
+	radUnhook( "sess.userid", waitAuthFinish );
+  radUnhook( "pagekey", waitAuthFinish );
+	postauth_timer = 0;
+	for( var i=0; i<postauth_methods.length; i++ ) {
+		postauth_methods[i]();
+	}
+	postauth_methods = [];
+}
+
+function HtmlRequest(url, parms, callback, extraparm)
+{
+    if( typeof callback == 'undefined' || callback == null ) callback=false;
+    if( typeof callback == 'string' ) {
+        var offx,cbshort;
+        if( (offx=callback.indexOf("(")) != -1 ) {
+            cbshort = callback.substring(0,offx);
+        } else {
+            cbshort = callback;
+        }
+        callback = eval(cbshort);
+    }
+    if( typeof extraparm == 'undefined' ) extraparm="";
+    var i = myhtmlrequest.length;
+//  alert("length: " + i + ": " + url);
+    z = new XMLHttpRequest();
+    z.mystoredurl = url;
+    z.onreadystatechange = HtmlCallback;
+    z.open('POST', url, true);
+    z.alreadyread=false;
+    if( typeof parms == 'string' ) {
+    	z.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //} else {
+    	//z.setRequestHeader("Content-Type", "multipart/form-data" );
+    }
+    z.resourceid = loadWheel();
+    try {
+        z.send(parms);
+        myhtmlcallback[i] = callback;
+        myhtmlparm[i] = extraparm;
+        myhtmlrequest[i] = z;
+    } catch( e ) {
+        console.log(e);
+    }
+}
+function buildUrlFrom(url, parms)
+{
+  if( parms == "" || !parms ) return url;
+  if( url.indexOf("?") != -1 ) {
+    return url + "&" + parms;
+  }
+  return url + "?" + parms;
+}
+function HtmlRequestGet(url, parms, callback, extraparm)
+{
+    if( typeof callback == 'undefined' || callback == null ) callback=false;
+    if( typeof extraparm == 'undefined' ) extraparm="";
+    if( typeof callback == 'string' ) {
+        var offx,cbshort;
+        if( (offx=callback.indexOf("(")) != -1 ) {
+            cbshort = callback.substring(0,offx);
+        } else {
+            cbshort = callback;
+        }
+        callback = eval(cbshort);
+    }
+    var i = myhtmlrequest.length;
+    z = new XMLHttpRequest();
+    z.mystoredurl = buildUrlFrom(url, parms);
+    z.onreadystatechange = HtmlCallback;
+    z.open('GET', z.mystoredurl, true);
+    z.alreadyread=false;
+    z.resourceid = loadWheel();
+    try {
+        z.send();
+        myhtmlcallback[i] = callback;
+        myhtmlparm[i] = extraparm;
+        myhtmlrequest[i] = z;
+    } catch( e ) {
+        console.log(e);
+    }
+}
+
+function HtmlCallback()
+{
+    for( var i=0; i < myhtmlrequest.length; i++ ) {
+        if( myhtmlrequest[i].readyState == 4 && myhtmlrequest[i].alreadyread == false ) {
+            loadWheel_fin(myhtmlrequest[i].resourceid);
+            myhtmlrequest[i].alreadyread=true;
+            if( myhtmlrequest[i].status != 200 ) {
+                console.error("There was an error processing your request.\n" + myhtmlrequest[i].mystoredurl);
+            } else {
+                if( myhtmlcallback[i] !== false ) {
+                    var fc = myhtmlcallback[i];
+                    if( typeof fc == 'string' )
+                        fc = eval(fc);
+                    fc(myhtmlrequest[i].responseText, myhtmlparm[i], myhtmlrequest[i]);
+                }
+            }
+            // drop this from the lists
+            myhtmlcallback.splice(i,1);
+            myhtmlrequest.splice(i,1);
+            myhtmlparm.splice(i,1);
+            return;
+        }
+    }
+}
+// Load wheel
+//! todo: make requests 'time out' after a period
+var loadresources = {};
+function loadWheel(timeoutCb)
+{
+    var r = randStr(16);
+    loadWheel_add(r,timeoutCb);
+    return r;
+}
+function loadWheel_add(resid, timeoutCb)
+{
+    var nw = new Date().getTime()/1000;
+    if( resid in loadresources )
+        loadresources[resid][1]++;
+    else
+        loadresources[resid]=[nw,1,0,timeoutCb,false];
+    calcLoadWheel();
+}
+function loadWheel_fin(resid)
+{
+    if( !(resid in loadresources) ) {
+        console.error("Finish unloaded resource id " + resid);
+        return false;
+    }
+
+    loadresources[resid][2]++;
+    loadresources[resid][4] = new Date().getTime()/1000;
+    if( loadresources[resid][2] >= loadresources[resid][1] ) {
+        calcLoadWheel();
+    }
+}
+function calcLoadWheel()
+{
+    var i, found=false;
+    var loading=false;
+    var registering_start=false;
+    var registering_finish=false;
+    var nw = new Date().getTime()/1000;
+    var time_finish=100, time_n, time_start=100;
+    //var e = gE("loadwheel");
+
+    for( i in loadresources ) {
+        if( loadresources[i][2] >= loadresources[i][1] ) {
+            time_n = (nw - loadresources[i][4]); // how long ago it finished
+            if( time_n < 3 ) {
+                registering_finish=true;
+                if( time_finish > time_n )
+                    time_finish = time_n;
+            }
+            found=true;
+        } else if( loadresources[i][0] > 0 ) {
+            time_n = (nw - loadresources[i][0]); // how long ago it started
+            if( time_n < 3 ) {
+                registering_start=true;
+                if( time_start > time_n )
+                    time_start = time_n;
+            }
+            loading=true;
+        }
+    }
+    radStore("timefin", time_finish);
+
+    //console.log("timefin ", time_finish);
+    if( time_finish > 100 )
+        time_finish = -1;
+    var loadrate;
+    if( registering_start ) {
+        loadrate = time_start/3.0;
+    } else {
+        loadrate = time_finish/3.0;
+    }
+    radStore("loadrate", loadrate);
+    if( loadrate < 1.0 ) {
+        setTimeout('calcLoadWheel()', 200);
+    }
+    if( found ) {
+        if( registering_start ) {
+            radStore( "loadcolor", "green" );
+        } else {
+            radStore( "loadcolor", "blue" );
+        }
+    } else {
+        if( registering_start ) {
+            radStore( "loadcolor", "green" );
+        } else {
+            radStore( "loadcolor", "black" );
+        }
+    }
+    //if( e ) {
+    //    radLoadDiv(e);
+    //}
+}
+
+
+
+//Message bar
+var pop_alerts = 0, pop_alert_down = -1;
+function popAlert( template, root, timelen = 7000 )
+{
+	var e = gE("alert_popup");
+
+	if( !e ) {
+		e = document.createElement("alertbar");
+		blitzTemplate( e, "alertbar" );
+		document.body.appendChild( e );
+	} else {
+		e.style.display = 'block';
+	}
+
+	e = gE("alert_popup_scroll");
+
+	var j = document.createElement("cl");
+	pop_alerts++;
+	e.appendChild(j);
+	blitzTemplate( j, template, root );
+
+	if( pop_alert_down == -1 )
+		pop_alert_down = setInterval( "popAlertDown()", timelen );
+}
+
+function popAlertsDown()
+{
+	pop_alerts = 0;
+	if( pop_alert_down != -1 ) {
+		clearInterval(pop_alert_down);
+		pop_alert_down = -1;
+	}
+
+	var e = gE("alert_popup");
+	e.style.display = 'none';
+	e = gE("alert_popup_scroll");
+	e.innerHTML = "";
+}
+function popAlertDown()
+{
+	if( --pop_alerts <= 0 )
+		popAlertsDown();
+}
+
+
+
+function safeJSON( str ) { // escape special characters.
+  var i, n;
+  var rstr="";
+  for( i=0; i<str.length; ++i ) {
+    if( (n=str.charCodeAt(i)) > 255 ) {
+      rstr += "\\u" + this.zeroPad( n.toString(16), 4 )
+    } else {
+      rstr += str[i];
+    }
+  }
+  return rstr;
+}
+
+function printJSON( obj ) { // JSON.stringify doesn't print objects.
+  var i, s="";
+
+  if( obj === null )
+    return "null";
+
+  if( typeof obj != 'object' ||
+   ( typeof obj.length != 'undefined' && Object.keys(obj).length == obj.length ) ) {
+    return safeJSON( JSON.stringify( obj ) );
+  }
+
+  for( i in obj ) {
+    if( typeof obj[i] == 'function' ) continue;;
+    if( s != "" ) s += ",";;
+
+    s += i + ":" + printJSON( obj[i] );;
+  }
+
+  return "{" + s + "}";
+};
+
+
+</script>
+
+<!--  end of backend -->

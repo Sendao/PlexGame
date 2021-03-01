@@ -1,0 +1,172 @@
+
+
+<templates>
+
+<div xTemplate='database'>
+
+<div xDataName=bases xUrl='/base.json' xSocketCode='bases' xCb='databaseRows'></div>
+<h2>Databases:</h2>
+<fl xWatch=bases>
+<fl xLoop=bases xInd=k xKey=kk xVal=v>
+<btn xStyle='margin-right: 10' xCmd='openDatabase("#k")'>#k<cl></cl></btn>
+</fl><cl></cl>
+</fl><cl></cl>
+<cl>&nbsp;</cl>
+<fl id=database_viewer></fl>
+<cl></cl>
+
+</div>
+
+<div xTemplate='data_base'>
+<h3>#[.name]</h3>
+Tables:<BR>
+<div xLoop=bases.#[.name].tables xInd=k xKey=i xVal=v>
+<fl xCast=db_table xSet='baseid=#.name,tableid=#k'>
+</fl>
+<cl></cl>
+</div>
+</div>
+
+<div xTemplate='db_table'>
+
+<fl id=table_#[tableid]_win xWatch=tables.#tableid>
+
+<cl></cl>
+<fl>
+"#[bases.#[baseid].tables.#[tableid].name]" rows:<BR>
+</fl>
+<cl></cl>
+
+<div xDataname=bases.#[baseid].tables.#[tableid].rows xUrl='/ed.json?base=#[baseid]&table=#[tableid]&start=0&count=100' xSocketCode='tables' xCb='tableRows'></div>
+
+<fl id=table_#[baseid]_#[tableid]_edit></fl>
+<cl></cl>
+<fl xCast='db_tablerows'></fl>
+<cl></cl>
+<btn xCmd='appendTable("#baseid", "#tableid")'>Add record</btn>
+
+</fl>
+<cl></cl>
+
+</div>
+
+<div xTemplate='editrow'>
+#tableid #[bases.#[baseid].tables.#[tableid].rows.#[row].id]:<BR>
+<form xForm=bases.#[baseid].tables.#[tableid].rows.#[row] method=post action='/ed.json'>
+  <input type=hidden name=base value="#[baseid]">
+  <input type=hidden name=table value="#[tableid]">
+<input type=hidden name=id>
+<div xLoop=bases.#[baseid].tables.#[tableid].defaults xInd=k2 xVal=v2>
+  <div xSet='varname=#k2'>
+<field xSet='title=#k2,titlewidth=200,name=#varname'></field>
+  </div>
+</div>
+<div class=formbtn>Save</div>
+</form>
+</div>
+
+<div xTemplate='removerow'>
+<form xForm=bases.#[baseid].tables.#[tableid].rows.#[row] method=post action='/ed.json'>
+<div class=fl>Delete #[bases.#[baseid].tables.#[table].rows.#[row].id]]?</div>
+<div class=formbtn>Confirm</div>
+</form>
+</div>
+
+<div xTemplate='db_tablerows'>
+<div xWatch=bases.#[baseid].tables.#[tableid]>
+<div xLoop=bases.#[baseid].tables.#[tableid].rows xKey=k xVal=v>
+<div class=fl xStyle='margin: 7' xCast=db_tablerow xSet='row=#k,titlefield=id'></div>
+<div class=btn xStyle='margin: 5' xCmd='editTableRow("#baseid", "#tableid", "#k")'>edit</div>
+<div class=btn xStyle='margin: 5' xCmd='removeTableRow("#baseid", "#tableid", "#k")'>remove</div>
+<div class=cl></div>
+</div>
+</div>
+</div>
+
+<div xTemplate='db_tablerow'>
+<div class=fl>#[bases.#[baseid].tables.#[tableid].rows.#[row].#[titlefield]]</div>
+<div class=cl></div>
+</div>
+
+<!--
+<div xTemplate='tableview'>
+<div xLoop=tables.#[table].defaults xKey=k2 xVal=v2></div>
+<div class=fl style='width: 120px'>#k2</div>
+<div class=fl>#[tables.#[table].rows.#[row].#[k2]]</div>
+<div class=cl></div>
+</div>
+<div class=cl></div>
+</div>
+ -->
+
+<!-- <form xForm=bases xWatch=net.scan xRoot='net.scan' xMethod=scannerOpenPage()>
+</form> -->
+
+
+</templates>
+
+<script language=javascript>
+
+function editTableRow(base,table,rowid)
+{
+    var e = gE("table_" + base + "_" + table + "_edit");
+    templateParams({'baseid': base, 'tableid': table, 'row':rowid});
+    //blitzTemplate(e,"editrow");
+    newWindow("editrow");
+}
+function removeTableRow(base,table,rowid)
+{
+    var e = gE("table_" + base + "_" + table + "_edit");
+    templateParams({'baseid': base, 'tableid': table, 'row':rowid});
+    //blitzTemplate(e,"removerow");
+    newWindow("removerow");
+}
+
+var db = {};
+function databaseRows(rows,b)
+{
+    rows = JSON.parse(rows);
+    console.info("dbRows",rows);
+    radStore("bases", rows);
+    for( var i in rows ) {
+        db[i] = rows[i];
+        //radStore("bases." + i, rows[i]);
+    }
+}
+
+function tableRows(a,b)
+{
+    console.info("tableRows",a,b);
+    if( a !== false ) {
+        radCStore( b.title, a );
+    }
+}
+
+function tableUpdate(ev)
+{
+    console.info("tableUpdate", ev);
+}
+function tableAppend(ev)
+{
+    console.info("tableAppend", ev);
+}
+function tableRemove(ev)
+{
+    console.info("tableRemove", ev);
+}
+function startTable(name)
+{
+    socketRegister(name + "_update", tableUpdate);
+    socketRegister(name + "_append", tableAppend);
+    socketRegister(name + "_remove", tableRemove);
+}
+
+function openDatabase(i)
+{
+  var e = gE("database_viewer");
+  //blitzTemplate(e, "data_base", "bases." + i);
+  //<div xCast=data_base xSet='baseid=#[k]'></div>
+  newWindow("data_base", "bases." + i);
+
+}
+</script>

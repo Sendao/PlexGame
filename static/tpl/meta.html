@@ -1,0 +1,109 @@
+
+<div id=MetaListerSource style='display: none'>
+<h2>Configuration _ #[bn]s</h2>
+
+<div xWatch=#datapath>
+<cl></cl>
+<div xLoop=#datapath xInd=vIndx xVal=vb>
+		<div xTest='"##vIndx" != "-1" && "##vIndx" != ""'>
+		<fl xLink='vb=#[#[datapath].##vIndx]'>
+
+						<btn style='width: 45px' xCmd='#[bn].truncate(##vb.id)'>Remove</btn>
+						<fl>&nbsp;</fl>
+						<btn style='width: 45px; padding-right: 4px' xCmd='#[bn].edit(##vb.id)'>Edit ##v.id</btn>
+						<fl xCast='#[sn]_short' xRoot='#[#[datapath].##[vIndx]]'></fl>
+						<cl></cl>
+
+
+		</fl>
+		<cl></cl>
+		</div>
+	</div>
+</div>
+
+<cl></cl>
+<btn xCmd='#[bn].add()'>+ Add #bn</btn>
+<cl>&nbsp;</cl>
+<fl id=#[sn]_ed></fl>
+<cl></cl>
+
+</div>
+
+<div id=MetaEditorSource style='display: none'>
+<form titlewidth='220px' xForm=#[#[datapath].##[#[sn]id]] method=post xMethod='#[bn].send(form)' action='#[action].js'>
+<input type=hidden name=id>
+<input type=hidden name=a value=edit>
+<div xCast='#[sn]_edit' xRoot='#[#[datapath].##[#[sn]id]]'></div>
+<cl></cl>
+<formbtn>Send</formbtn>
+<cl></cl>
+</form>
+<cl></cl>
+</div>
+
+
+<script language=javascript>
+function MetaEditor( dataroot, shortname, action )
+{
+  this.datapath = dataroot;
+  this.action = action;
+	this.sn = shortname;
+	this.bn = shortname.substr(0,1).toUpperCase() + shortname.substr(1);
+
+	this.builder = function(src, template, myparms)
+	{
+			var templ = document.createElement("div");
+			templ.setAttribute( 'xTemplate', template );
+			templ.setAttribute( 'keepscan', 1 );
+			templ.setAttribute( 'style', 'display:none' );
+			radNode = templ;
+			templ.params = myparms;
+			templ.innerHTML = radTranslate(src);
+			document.body.appendChild(templ);
+			radScanDiv(templ);
+
+	}
+	this.make = function()
+	{// build the template
+		var myparms = { 'sn': this.sn, 'datapath': this.datapath, 'action': this.action, 'bn': this.bn };
+
+		var e = gE("MetaEditorSource");
+		var src = e.innerHTML;
+		this.builder( src, 'meta_' + this.sn + "_e", myparms );
+
+		e = gE("MetaListerSource");
+		src = e.innerHTML;
+		this.builder( src, 'meta_' + this.sn + '_l', myparms );
+	};
+
+	this.edit = function(id) {
+		radStore(this.sn + "id", id);
+		var e = gE(this.sn + "_ed");
+		blitzTemplate(e, this.sn + "_e", this.datapath + "." + id);
+	};
+
+	this.truncate = function(id)
+	{
+	  if( confirm("Delete " + this.sn + " #" + id) ) {
+	    RadPost(this.action, { 'a': 'remove', 'id': id });
+	  }
+	};
+
+	this.add = function()
+	{
+		radStore(this.datapath + ".-1", {'id':'-1'});
+		this.edit(-1);
+	};
+
+	this.send = function( f )
+	{
+		radFormSave(f,true);
+		if( f.id.value == -1 ) {
+			radStore(this.datapath + ".-1", {'id':'-1'});
+			var e = gE(this.sn + "_ed");
+			clearNode(e);
+		}
+	};
+	this.make();
+};
+</script>

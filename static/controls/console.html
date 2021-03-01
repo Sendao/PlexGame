@@ -1,0 +1,97 @@
+<templates>
+
+<div xTemplate=tool_console>
+<form xForm=console xMethod='sendCommand(this); return false;'>
+
+<div class=fl>
+<textarea name=content editable=false rows=40 cols=160 style='background-color: black; color: #aaaaaa'></textarea>
+</div>
+
+<div class=cl></div>
+
+<div class=fl>
+
+<div class=fl><input type=text name=commandline size=80></div>
+<formbtn>Run</formbtn>
+
+<div class=cl>&nbsp;</div>
+
+<btn xCmd='scanKeys()'>Keysof</btn>
+<div class=fl>&nbsp;</div>
+<btn xCmd='scanType()'>Typeof</btn>
+<div class=fl>&nbsp;</div>
+<btn xCmd='scanJSON()'>JSONify</btn>
+<div class=fl>&nbsp;</div>
+
+<div class=cl></div>
+
+<btn xCmd='chooseTool(1)'>Inspect</btn>
+</div>
+
+<div class=fl id=toolset></div>
+<div class=cl></div>
+
+</form>
+</div>
+
+<div xTemplate=toolset_1>
+
+<div class=fl>
+<select name=whichshorty onChange='radFieldUpdate(this)'>
+ <option>this.app.ctrl
+ <option>this.app.data
+ <option>this.app.base
+</select>
+</div>
+
+<div class=fl xCmd='injector("a=\"\"; for( i in " + radVar("console.whichshorty") + " ) { a += i + \"\\n\"; } a;")'>examine</div>
+<div class=cl></div>
+</div>
+
+</templates>
+
+<script language=javascript>
+
+function sendCommand(fm)
+{
+    console.log(fm.commandline.value);
+    RadPost("/console", { 'r':fm.commandline.value}, cmdCB);//radVar("net.scan"));
+    return false;
+}
+function scanKeys()
+{
+	RadPost("/console", { 'r':'a=""; for( i in ' + document.forms[0].commandline.value + ' ) { a += i + "\\n"; } a;'}, cmdCB);
+	return false;
+}
+function scanType()
+{
+	RadPost('/console', { 'r':'typeof ' + document.forms[0].commandline.value }, cmdCB);
+	return false;
+}
+function scanJSON()
+{
+	RadPost("/console", { 'r':'JSON.stringify(' + document.forms[0].commandline.value + ')'}, cmdCB);
+	return false;
+}
+function cmdCB(a)
+{
+	console.log("cmdCB");
+	console.log(a);
+	document.forms[0].content.innerText = document.forms[0].content.value + "\n" + a + "\n";
+	document.forms[0].content.scrollTop = document.forms[0].content.scrollHeight;
+}
+
+function chooseTool(n)
+{
+	var e = gE("toolset");
+
+	blitzTemplate(e, "toolset_" + n);
+	setTimeout("radFormSave(document.forms[0],false);", 10);
+}
+
+function injector(code)
+{
+	document.forms[0].commandline.value = code; document.forms[0].commandline.focus();
+}
+
+</script>
